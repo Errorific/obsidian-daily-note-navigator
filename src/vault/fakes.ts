@@ -59,6 +59,25 @@ export class FakeVault {
 		}
 		return content;
 	}
+
+	async modify(file: TFile, data: string): Promise<void> {
+		if (!this.files.has(file.path)) {
+			throw new Error(`File not found: ${file.path}`);
+		}
+		this.files.set(file.path, data);
+	}
+
+	async delete(file: TAbstractFile): Promise<void> {
+		if (this.files.has(file.path)) {
+			this.files.delete(file.path);
+			return;
+		}
+		if (this.folders.has(file.path)) {
+			this.folders.delete(file.path);
+			return;
+		}
+		throw new Error(`File not found: ${file.path}`);
+	}
 }
 
 export function makeApp(): { app: App; vault: FakeVault } {

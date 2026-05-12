@@ -2,7 +2,7 @@
 // "Read the template file" for the failure semantics: a missing template
 // is an error, not a silent fallback to empty creation.
 
-import type { App } from "obsidian";
+import type { App, TFile } from "obsidian";
 import { isFile } from "./predicates";
 
 export class TemplateNotFoundError extends Error {
@@ -15,13 +15,18 @@ export class TemplateNotFoundError extends Error {
 	}
 }
 
-export async function loadTemplate(
-	app: App,
-	vaultRelativePath: string,
-): Promise<string> {
+export function getTemplateFile(app: App, vaultRelativePath: string): TFile {
 	const file = app.vault.getAbstractFileByPath(vaultRelativePath);
 	if (file === null || !isFile(file)) {
 		throw new TemplateNotFoundError(vaultRelativePath);
 	}
+	return file;
+}
+
+export async function loadTemplate(
+	app: App,
+	vaultRelativePath: string,
+): Promise<string> {
+	const file = getTemplateFile(app, vaultRelativePath);
 	return await app.vault.read(file);
 }
