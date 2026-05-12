@@ -293,6 +293,39 @@ A first-day choice fails for `Q1` years whose Jan 1 falls on Fri/Sat/Sun
 week-year. The first Thursday is always in the requested ISO year and
 within the first seven days of the quarter.
 
+#### `{{dnn.week}}` and `{{dnn.quarter}}` describe the input anchor, not the folder
+
+`{{dnn.year}}`, `{{dnn.quarter}}`, and `{{dnn.week}}` are derived from
+the **input anchor date** passed into the resolver, not from
+`{{dnn.anchor_date}}` (which is set separately to the canonical anchor
+for the period). For daily and weekly notes those are the same date so
+the markers describe the period unambiguously. For quarterly and yearly
+notes the input anchor depends on who is calling:
+
+- `dnn:find period=quarterly ref=2026/Q2` parses the ref to mid-month of
+  the middle month (May 15, 2026). The resulting markers are
+  `year=2026`, `quarter=2`, `week=20` -- not the first week of Q2.
+  `{{dnn.anchor_date}}` is the canonical `2026-04-02` (first Thursday of
+  Q2) regardless.
+- `dnn:find period=yearly ref=2026` parses to July 1, 2026, so the
+  markers are `year=2026`, `quarter=3`, `week=27`. `{{dnn.anchor_date}}`
+  is `2026-07-01`.
+- A `date=YYYY-MM-DD` flag overrides the parsed anchor with the user's
+  date, so `{{dnn.week}}` for a yearly note created via `date=2026-12-15`
+  would report W51, not W27.
+
+If a template needs a marker that describes the **period scope** ("this
+is Q2 2026, regardless of which day inside Q2 we anchored on"), use
+`{{dnn.folder}}` -- it always reflects the resolved path. The week and
+quarter markers are most useful inside daily and weekly templates;
+yearly and quarterly templates should generally rely on
+`{{dnn.period}}`, `{{dnn.anchor_date}}`, and `{{dnn.folder}}` instead.
+
+A possible follow-up is to derive `year`/`quarter`/`week` from the
+canonical anchor so they round-trip with `{{dnn.anchor_date}}` and don't
+depend on how the caller produced the input. See the implementation
+plan's working notes.
+
 ### Why pre-substitute rather than expose a Templater user function?
 
 Templater has its own user-function mechanism (`tp.user.*`) and a
