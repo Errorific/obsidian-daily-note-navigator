@@ -22,6 +22,15 @@ export default tseslint.config(
 		},
 	},
 	...obsidianmd.configs.recommended,
+	{
+		// Test fakes construct plain objects that satisfy the TFile / TFolder
+		// shape. The obsidian package is types-only at runtime, so
+		// `instanceof TFile` is not available -- we have to cast.
+		files: ["src/**/fakes.ts", "src/**/*.test.ts"],
+		rules: {
+			"obsidianmd/no-tfile-tfolder-cast": "off",
+		},
+	},
 	globalIgnores([
 		"node_modules",
 		"dist",
