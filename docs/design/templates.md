@@ -215,14 +215,40 @@ templater.files_with_pending_templates.add(targetPath);
 try {
   // create empty file, parse_template, modify, etc.
 } finally {
-  templater.files_with_pending_templates.delete(targetPath);
+  // Deferred ~500ms so the entry survives Templater's 300ms trigger
+  // wait, even when the create flow itself finishes in <1ms (the
+  // empty-creation path). See "Timing: outlast Templater's 300ms wait".
+  setTimeout(() => templater.files_with_pending_templates.delete(targetPath), 500);
 }
 ```
 
-The pending-set check is the very first thing Templater's handler does
-after its 300ms wait (see `Templater.ts` line ~562), so the timing is
-forgiving: as long as the path is in the set before the handler resumes
-from its `await delay(300)`, we win.
+#### Timing: outlast Templater's 300ms wait
+
+Templater's create-trigger handler does `await delay(300)` before it
+checks `files_with_pending_templates` (see `Templater.ts` ~line 562).
+Whatever we put in the set must still be present when that timer fires.
+
+For the **templated** creation path that's not a hard constraint --
+`parse_template` plus `vault.modify` usually takes longer than 300ms, so
+a synchronous `pendingSet.delete()` in `finally` happens to win the
+race. But it is a race, and on a simple template or a fast machine the
+delete can still fire before Templater's timer.
+
+For the **empty** creation path there is no `parse_template` or `modify`
+to keep us busy: `vault.create(path, "")` returns in <1ms and our
+`finally` runs immediately. If we remove the pending-set entry
+synchronously the entry is gone by T+300ms and Templater applies the
+folder template, overwriting our just-created empty note. This is the
+exact symptom you see in a vault with `trigger_on_file_creation: true`
+and a folder template covering `Journal/`: the note is empty when our
+flow returns and gets clobbered ~300ms later by the folder template.
+
+The fix is to schedule the pending-set delete via `setTimeout(...,
+~500ms)` so the entry comfortably outlasts Templater's wait window. The
+created `TFile` is still returned to the caller synchronously; only the
+guard cleanup is deferred. 500ms gives a 200ms margin over Templater's
+documented 300ms and is short enough that the pending set doesn't
+accumulate entries even under rapid note creation.
 
 If a future Templater version renames or removes this set, our guard
 becomes a no-op. We feature-detect (`if (templater.files_with_pending_templates instanceof Set)`)

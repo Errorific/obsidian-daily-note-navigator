@@ -9,6 +9,16 @@
 //     template configured on the journal root cannot overwrite our work.
 //   - On Templater parse failure the empty placeholder is rolled back so
 //     the user is left in their original state.
+//
+// Timing note: Templater's create-trigger handler does `await delay(300)`
+// before it checks `files_with_pending_templates`. If we remove our entry
+// from the set synchronously after `vault.create` returns (which happens
+// in the empty-creation path -- there is no parse_template / modify to
+// keep us busy), the entry is gone by the time Templater's timer fires
+// and the folder template overwrites our just-created note. We therefore
+// defer the pending-set delete by PENDING_SET_RELEASE_MS so it outlasts
+// Templater's wait window. The created TFile is still returned to the
+// caller synchronously; the deferred cleanup runs in the background.
 
 import type { App, TFile } from "obsidian";
 import type { Period, Resolved } from "../dates/resolver";
@@ -22,6 +32,15 @@ import {
 	getTemplater,
 	hasPendingSet,
 } from "./detect";
+
+// Templater's folder-template trigger waits 300ms before checking the
+// pending set. We hold our entry comfortably longer so the entry is still
+// present when Templater's timer fires. Exposed for tests via setter below.
+export let PENDING_SET_RELEASE_MS = 500;
+
+export function _setPendingSetReleaseMsForTests(ms: number): void {
+	PENDING_SET_RELEASE_MS = ms;
+}
 
 export interface CreateNoteOptions {
 	anchor: Date;
@@ -65,10 +84,22 @@ export async function createNote(
 			: undefined;
 	pendingSet?.add(resolved.path);
 
+	let scheduledRelease = false;
+	const releasePendingSet = () => {
+		if (scheduledRelease || pendingSet === undefined) return;
+		scheduledRelease = true;
+		// Deferred: outlast Templater's 300ms delay(...) inside its trigger
+		// handler. See the file header for the race this prevents.
+		setTimeout(() => {
+			pendingSet.delete(resolved.path);
+		}, PENDING_SET_RELEASE_MS);
+	};
+
 	try {
 		const target = await createEmpty(app, resolved.path);
 
 		if (substituted === undefined) {
+			releasePendingSet();
 			return target;
 		}
 
@@ -92,7 +123,7 @@ export async function createNote(
 		await app.vault.modify(target, rendered);
 		return target;
 	} finally {
-		pendingSet?.delete(resolved.path);
+		releasePendingSet();
 	}
 }
 
