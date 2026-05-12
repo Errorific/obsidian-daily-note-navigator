@@ -94,7 +94,16 @@ function atLocalNoon(year: number, monthIndex: number, day: number): Date {
 	return new Date(year, monthIndex, day, 12, 0, 0, 0);
 }
 
-function formatIsoDate(date: Date): string {
+// Returns the Monday of ISO week `week` of ISO week-year `year`. Caller is
+// responsible for round-tripping through isoWeekOf to validate that the week
+// exists in that year (e.g. 2025 has no W53).
+export function mondayOfIsoWeek(year: number, week: number): Date {
+	const jan4 = atLocalNoon(year, 0, 4);
+	const jan4IsoDay = jan4.getDay() === 0 ? 7 : jan4.getDay();
+	return atLocalNoon(year, 0, 4 - (jan4IsoDay - 1) + (week - 1) * 7);
+}
+
+export function formatIsoDate(date: Date): string {
 	const y = String(date.getFullYear()).padStart(4, "0");
 	const m = String(date.getMonth() + 1).padStart(2, "0");
 	const d = String(date.getDate()).padStart(2, "0");

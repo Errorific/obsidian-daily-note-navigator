@@ -11,7 +11,7 @@
 // agree with the user's request even at year boundaries. See the worked
 // rationale in docs/design/folder-layout.md ("Edge cases and open questions").
 
-import { type Period, isoWeekOf } from "./resolver";
+import { type Period, isoWeekOf, mondayOfIsoWeek } from "./resolver";
 
 export interface ParsedRef {
 	anchor: Date;
@@ -92,14 +92,6 @@ function parseYearlyRef(ref: string): Date {
 	}
 	const year = Number(match[1]);
 	return atLocalNoon(year, 6, 1);
-}
-
-function mondayOfIsoWeek(year: number, week: number): Date {
-	// Jan 4 is always in ISO week 1. Step back to that week's Monday, then
-	// jump forward (week - 1) weeks.
-	const jan4 = atLocalNoon(year, 0, 4);
-	const jan4IsoDay = jan4.getDay() === 0 ? 7 : jan4.getDay();
-	return atLocalNoon(year, 0, 4 - (jan4IsoDay - 1) + (week - 1) * 7);
 }
 
 function atLocalNoon(year: number, monthIndex: number, day: number): Date {
