@@ -1,9 +1,27 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { resolve } from "../dates/resolver";
 import { TemplateNotFoundError } from "../vault/templates";
 import { makeApp } from "../vault/fakes";
-import { createNote } from "./create";
+import {
+	_setPendingSetReleaseMsForTests,
+	createNote,
+} from "./create";
 import { FakeTemplater, installTemplater } from "./fakes";
+
+beforeEach(() => {
+	// Run the pending-set release timer immediately so tests can assert on
+	// the post-cleanup state without arbitrary waits. Production keeps the
+	// configured 500ms delay so we outlast Templater's 300ms trigger window.
+	_setPendingSetReleaseMsForTests(0);
+});
+
+afterEach(() => {
+	_setPendingSetReleaseMsForTests(500);
+});
+
+async function flushTimers(): Promise<void> {
+	await new Promise<void>((res) => setTimeout(res, 0));
+}
 
 function localDate(year: number, monthIndex: number, day: number): Date {
 	return new Date(year, monthIndex, day, 12, 0, 0, 0);
@@ -56,9 +74,20 @@ describe("createNote -- empty-creation path", () => {
 
 		await createNote(app, RESOLVED, { anchor: ANCHOR, period: "daily" });
 
+		// Pending-set entry is held even after createNote returns; it is
+		// cleared by the deferred release. With the test delay = 0 we only
+		// need to flush microtasks/timers.
 		expect(templater.addedPaths).toEqual([RESOLVED.path]);
+		expect(templater.deletedPaths).toEqual([]);
+		expect(
+			templater.files_with_pending_templates.has(RESOLVED.path),
+		).toBe(true);
+
+		await flushTimers();
 		expect(templater.deletedPaths).toEqual([RESOLVED.path]);
-		expect(templater.files_with_pending_templates.has(RESOLVED.path)).toBe(false);
+		expect(
+			templater.files_with_pending_templates.has(RESOLVED.path),
+		).toBe(false);
 		expect(vault.files.get(RESOLVED.path)).toBe("");
 	});
 });
@@ -122,6 +151,7 @@ describe("createNote -- Templater integration", () => {
 
 		expect(vault.files.get(RESOLVED.path)).toBe("period=daily\n2026-05-11\n");
 		expect(templater.addedPaths).toEqual([RESOLVED.path]);
+		await flushTimers();
 		expect(templater.deletedPaths).toEqual([RESOLVED.path]);
 	});
 
@@ -146,7 +176,9 @@ describe("createNote -- Templater integration", () => {
 		);
 
 		expect(vault.files.has(RESOLVED.path)).toBe(false);
-		// Guard still cleaned up even though the inner call threw.
+		// Guard release is deferred even on the error path so a fired
+		// Templater trigger checking the pending set still sees the entry.
+		await flushTimers();
 		expect(templater.deletedPaths).toEqual([RESOLVED.path]);
 		expect(templater.files_with_pending_templates.has(RESOLVED.path)).toBe(false);
 	});
