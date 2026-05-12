@@ -1,8 +1,163 @@
 /*
+ * Daily Note Navigator -- calendar sidebar styles.
+ * See docs/design/calendar-sidebar.md for the layout these implement.
+ * All colours use Obsidian CSS variables so the view tracks the active theme.
+ */
 
-This CSS file will be included with your plugin, and
-available in the app when your plugin is enabled.
+.dnn-calendar {
+	padding: var(--size-4-3);
+	font-size: var(--font-ui-small);
+	color: var(--text-normal);
+}
 
-If your plugin does not need CSS, delete this file.
+.dnn-calendar-header {
+	display: flex;
+	flex-direction: column;
+	gap: var(--size-2-2);
+	margin-bottom: var(--size-4-2);
+}
 
-*/
+.dnn-calendar-nav {
+	display: flex;
+	align-items: center;
+	gap: var(--size-2-2);
+	flex-wrap: wrap;
+}
+
+.dnn-calendar-nav-button,
+.dnn-calendar-month-label,
+.dnn-calendar-today-button {
+	background: none;
+	border: none;
+	color: var(--text-normal);
+	cursor: pointer;
+	padding: var(--size-2-1) var(--size-2-2);
+	border-radius: var(--radius-s);
+}
+
+.dnn-calendar-nav-button:hover,
+.dnn-calendar-month-label:hover,
+.dnn-calendar-today-button:hover {
+	background-color: var(--background-modifier-hover);
+}
+
+.dnn-calendar-month-label {
+	font-weight: var(--font-semibold);
+	flex: 1;
+	text-align: left;
+}
+
+.dnn-calendar-today-button {
+	font-size: var(--font-ui-smaller);
+	border: 1px solid var(--background-modifier-border);
+}
+
+.dnn-calendar-period-links {
+	display: flex;
+	gap: var(--size-4-2);
+	font-size: var(--font-ui-smaller);
+}
+
+.dnn-calendar-quarter-link,
+.dnn-calendar-year-link {
+	color: var(--text-muted);
+	text-decoration: none;
+	position: relative;
+	padding: 0 var(--size-2-1);
+}
+
+.dnn-calendar-quarter-link:hover,
+.dnn-calendar-year-link:hover {
+	color: var(--text-normal);
+}
+
+.dnn-calendar-grid {
+	width: 100%;
+	border-collapse: collapse;
+	table-layout: fixed;
+}
+
+.dnn-calendar-grid th {
+	font-weight: var(--font-normal);
+	color: var(--text-faint);
+	font-size: var(--font-ui-smaller);
+	padding: var(--size-2-1);
+	text-align: center;
+}
+
+.dnn-calendar-wk-header {
+	color: var(--text-faint);
+}
+
+.dnn-calendar-grid td {
+	padding: 0;
+	text-align: center;
+	vertical-align: middle;
+}
+
+.dnn-calendar-day-link,
+.dnn-calendar-week-link {
+	display: block;
+	padding: var(--size-2-1) 0;
+	color: var(--text-normal);
+	text-decoration: none;
+	border-radius: var(--radius-s);
+	position: relative;
+}
+
+.dnn-calendar-week-link {
+	color: var(--text-faint);
+	font-size: var(--font-ui-smaller);
+}
+
+.dnn-calendar-day-link:hover,
+.dnn-calendar-week-link:hover {
+	background-color: var(--background-modifier-hover);
+}
+
+.dnn-calendar-day-cell.dnn-adjacent-month .dnn-calendar-day-link {
+	color: var(--text-faint);
+}
+
+.dnn-calendar-day-cell.dnn-today .dnn-calendar-day-link {
+	background-color: var(--interactive-accent);
+	color: var(--text-on-accent);
+	font-weight: var(--font-semibold);
+}
+
+.dnn-calendar-day-cell.dnn-current .dnn-calendar-day-link {
+	box-shadow: inset 0 0 0 2px var(--interactive-accent);
+}
+
+.dnn-current-week .dnn-calendar-week-link {
+	box-shadow: inset 0 0 0 2px var(--interactive-accent);
+	color: var(--text-normal);
+}
+
+.dnn-calendar-quarter-link.dnn-current,
+.dnn-calendar-year-link.dnn-current {
+	color: var(--text-normal);
+	box-shadow: inset 0 -2px 0 var(--interactive-accent);
+}
+
+/* Existence indicator: small dot under the number. */
+.dnn-has-note::after {
+	content: "";
+	position: absolute;
+	left: 50%;
+	bottom: 2px;
+	width: 4px;
+	height: 4px;
+	margin-left: -2px;
+	border-radius: 50%;
+	background-color: var(--text-accent);
+}
+
+.dnn-calendar-quarter-link.dnn-has-note::after,
+.dnn-calendar-year-link.dnn-has-note::after {
+	bottom: -2px;
+}
+
+.dnn-calendar-day-cell.dnn-today .dnn-has-note::after {
+	background-color: var(--text-on-accent);
+}
