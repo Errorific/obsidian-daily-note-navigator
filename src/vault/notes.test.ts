@@ -20,6 +20,16 @@ describe("exists", () => {
 		vault.files.set(resolved.path, "existing content");
 		expect(exists(app, resolved)).toBe(true);
 	});
+
+	it("returns false when a folder occupies the resolved note path", () => {
+		// Implausible in normal use, but the contract is "does the note exist",
+		// not "is anything at this path". A folder collision must not be
+		// reported as an existing note.
+		const { app, vault } = makeApp();
+		const resolved = resolve(localDate(2026, 4, 11), "daily");
+		vault.folders.add(resolved.path);
+		expect(exists(app, resolved)).toBe(false);
+	});
 });
 
 describe("ensureFolder", () => {

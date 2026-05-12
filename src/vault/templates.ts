@@ -2,7 +2,8 @@
 // "Read the template file" for the failure semantics: a missing template
 // is an error, not a silent fallback to empty creation.
 
-import type { App, TAbstractFile, TFile } from "obsidian";
+import type { App } from "obsidian";
+import { isFile } from "./predicates";
 
 export class TemplateNotFoundError extends Error {
 	readonly path: string;
@@ -23,8 +24,4 @@ export async function loadTemplate(
 		throw new TemplateNotFoundError(vaultRelativePath);
 	}
 	return await app.vault.read(file);
-}
-
-function isFile(file: TAbstractFile): file is TFile {
-	return "extension" in file;
 }
