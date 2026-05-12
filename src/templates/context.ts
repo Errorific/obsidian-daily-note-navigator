@@ -54,9 +54,7 @@ function canonicalAnchorDate(
 		case "weekly":
 			return formatIsoDate(mondayOfIsoWeek(year, week));
 		case "quarterly":
-			return formatIsoDate(
-				new Date(year, (quarter - 1) * 3, 1, 12, 0, 0, 0),
-			);
+			return formatIsoDate(firstThursdayOfQuarter(year, quarter));
 		case "yearly":
 			return formatIsoDate(new Date(year, 6, 1, 12, 0, 0, 0));
 		default: {
@@ -64,6 +62,19 @@ function canonicalAnchorDate(
 			throw new Error(`Unknown period: ${String(exhaustive)}`);
 		}
 	}
+}
+
+// First Thursday in the first month of the calendar quarter. Because ISO
+// week-year is determined by a week's Thursday, this anchor is guaranteed
+// to round-trip through resolve(): the year and quarter it implies always
+// match the requested ones, even when Jan 1 of `year` falls in the prior
+// ISO week-year (e.g. 2027/Q1 anchors at 2027-01-07, not 2027-01-01).
+function firstThursdayOfQuarter(year: number, quarter: number): Date {
+	const startMonth = (quarter - 1) * 3;
+	const firstOfQuarter = new Date(year, startMonth, 1, 12, 0, 0, 0);
+	const isoWeekday = firstOfQuarter.getDay() === 0 ? 7 : firstOfQuarter.getDay();
+	const offset = (4 - isoWeekday + 7) % 7;
+	return new Date(year, startMonth, 1 + offset, 12, 0, 0, 0);
 }
 
 function stripMdExt(filename: string): string {

@@ -273,14 +273,25 @@ For a creation with `period = daily` and `anchor = 2026-05-11`:
 | `{{dnn.path}}`         | `Journal/2026/Q2/W20/2026-05-11.md`    |
 
 For non-daily periods, `anchor_date` is the canonical anchor of the
-period (the same date the resolver internally uses to compute the path):
+period: a date that the resolver maps back to the same folder when fed
+through it again. This means the value is safe to round-trip via the CLI
+`date=` flag or any other place a date is fed back into the resolver.
 
 | Period    | Canonical anchor for `{{dnn.anchor_date}}`     |
 |-----------|------------------------------------------------|
 | daily     | the daily-note date                            |
 | weekly    | Monday of the ISO week                         |
-| quarterly | first day of the calendar quarter              |
+| quarterly | first Thursday of the calendar quarter         |
 | yearly    | July 1 of the ISO week-year (mid-year, avoids both ISO and calendar year-boundary ambiguity) |
+
+The quarterly anchor uses the first Thursday of the calendar quarter
+rather than the first day, so it composes cleanly with the resolver's
+own "Thursday determines ISO year and quarter" rule (see ADR
+[2026-05-11-iso-week-period-boundaries](../decisions/2026-05-11-iso-week-period-boundaries.md)).
+A first-day choice fails for `Q1` years whose Jan 1 falls on Fri/Sat/Sun
+(2027, 2033, ...) because that date belongs to the previous ISO
+week-year. The first Thursday is always in the requested ISO year and
+within the first seven days of the quarter.
 
 ### Why pre-substitute rather than expose a Templater user function?
 

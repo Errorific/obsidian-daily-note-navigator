@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { parseRef } from "../dates/refs";
 import { resolve } from "../dates/resolver";
 import { type Context, buildContext } from "./context";
 
@@ -50,24 +51,65 @@ describe("buildContext - weekly", () => {
 });
 
 describe("buildContext - quarterly", () => {
-	it("anchor_date is the first day of the calendar quarter", () => {
+	it("anchor_date is the first Thursday of the calendar quarter", () => {
+		// 2026-04-01 is a Wednesday, so the first Thursday of Q2 2026 is Apr 2.
 		const anchor = localDate(2026, 3, 15);
 		const ctx = buildContext(anchor, "quarterly", resolve(anchor, "quarterly"));
-		expect(ctx.anchor_date).toBe("2026-04-01");
+		expect(ctx.anchor_date).toBe("2026-04-02");
 		expect(ctx.filename).toBe("Q2");
 		expect(ctx.folder).toBe("Journal/2026/Q2");
 		expect(ctx.path).toBe("Journal/2026/Q2/Q2.md");
 	});
 
 	it.each<{ ref: Date; quarter: string; anchorDate: string }>([
+		// 2026-01-01 is Thursday -> first Thursday of Q1.
 		{ ref: localDate(2026, 0, 15), quarter: "1", anchorDate: "2026-01-01" },
-		{ ref: localDate(2026, 4, 15), quarter: "2", anchorDate: "2026-04-01" },
-		{ ref: localDate(2026, 7, 15), quarter: "3", anchorDate: "2026-07-01" },
+		// 2026-04-01 is Wed -> first Thursday is Apr 2.
+		{ ref: localDate(2026, 4, 15), quarter: "2", anchorDate: "2026-04-02" },
+		// 2026-07-01 is Wed -> first Thursday is Jul 2.
+		{ ref: localDate(2026, 7, 15), quarter: "3", anchorDate: "2026-07-02" },
+		// 2026-10-01 is Thursday -> first Thursday of Q4.
 		{ ref: localDate(2026, 10, 15), quarter: "4", anchorDate: "2026-10-01" },
 	])("Q$quarter -> anchor_date $anchorDate", ({ ref, quarter, anchorDate }) => {
 		const ctx = buildContext(ref, "quarterly", resolve(ref, "quarterly"));
 		expect(ctx.quarter).toBe(quarter);
 		expect(ctx.anchor_date).toBe(anchorDate);
+	});
+
+	it("Q1 anchor is unambiguous when Jan 1 sits in the previous ISO week-year", () => {
+		// 2027-01-01 is Friday and belongs to ISO 2026-W53. A naive
+		// first-of-quarter anchor (2027-01-01) would round-trip to
+		// Journal/2026/Q4. First Thursday of Q1 2027 is Jan 7, which
+		// round-trips correctly.
+		const anchor = localDate(2027, 1, 15);
+		const ctx = buildContext(anchor, "quarterly", resolve(anchor, "quarterly"));
+		expect(ctx.anchor_date).toBe("2027-01-07");
+		expect(ctx.path).toBe("Journal/2027/Q1/Q1.md");
+	});
+
+	it("Q1 anchor is also correct when Jan 1 is a Saturday (2033)", () => {
+		// 2033-01-01 is Saturday -> first Thursday of Jan 2033 is Jan 6.
+		const anchor = localDate(2033, 1, 15);
+		const ctx = buildContext(anchor, "quarterly", resolve(anchor, "quarterly"));
+		expect(ctx.anchor_date).toBe("2033-01-06");
+	});
+
+	it("anchor_date round-trips through the quarterly resolver for every boundary case", () => {
+		// Round-trip: emitted anchor_date, fed back as a CLI date= input,
+		// must resolve to the same quarterly note.
+		const cases = [
+			localDate(2026, 1, 15), // Q1 2026
+			localDate(2027, 1, 15), // Q1 2027 (Fri-start year)
+			localDate(2032, 1, 15), // Q1 2032 (Thu-start year)
+			localDate(2033, 1, 15), // Q1 2033 (Sat-start year)
+			localDate(2034, 1, 15), // Q1 2034 (Sun-start year)
+		];
+		for (const anchor of cases) {
+			const originalResolved = resolve(anchor, "quarterly");
+			const ctx = buildContext(anchor, "quarterly", originalResolved);
+			const replayed = parseRef(ctx.anchor_date, "daily");
+			expect(resolve(replayed, "quarterly").path).toBe(originalResolved.path);
+		}
 	});
 });
 
