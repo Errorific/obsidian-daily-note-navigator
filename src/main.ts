@@ -1,5 +1,6 @@
 import { Plugin } from "obsidian";
 import { registerCliHandlers } from "./cli/register";
+import { registerCommands } from "./commands/register";
 import { DEFAULT_SETTINGS, Settings } from "./settings";
 
 export default class DailyNoteNavigator extends Plugin {
@@ -8,6 +9,7 @@ export default class DailyNoteNavigator extends Plugin {
 	async onload() {
 		await this.loadSettings();
 		registerCliHandlers(this);
+		registerCommands(this);
 	}
 
 	onunload() {}
