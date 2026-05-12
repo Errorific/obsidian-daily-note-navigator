@@ -1,8 +1,8 @@
-name: Node.js build
+name: CI
 
 on:
     push:
-        branches: ["**"]
+        branches: [main]
     pull_request:
         branches: ["**"]
 
@@ -25,4 +25,4 @@ jobs:
             - run: npm ci
             - run: npm run build --if-present
             - run: npm run lint
-
+            - run: npm test
