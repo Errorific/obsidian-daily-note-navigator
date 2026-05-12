@@ -8,7 +8,14 @@
 // directly. There's no `seed()` helper; the call sites are short enough
 // without it.
 
-import type { App, TAbstractFile, TFile, TFolder, Vault } from "obsidian";
+import type {
+	App,
+	TAbstractFile,
+	TFile,
+	TFolder,
+	Vault,
+	Workspace,
+} from "obsidian";
 
 export class FakeVault {
 	readonly files = new Map<string, string>();
@@ -80,10 +87,38 @@ export class FakeVault {
 	}
 }
 
-export function makeApp(): { app: App; vault: FakeVault } {
+export interface FakeOpen {
+	path: string;
+	tab: boolean;
+}
+
+export class FakeWorkspace {
+	readonly opens: FakeOpen[] = [];
+
+	getLeaf(newLeaf: boolean | string = false): {
+		openFile: (file: TFile) => Promise<void>;
+	} {
+		const tab = newLeaf === true || newLeaf === "tab";
+		return {
+			openFile: async (file: TFile) => {
+				this.opens.push({ path: file.path, tab });
+			},
+		};
+	}
+}
+
+export function makeApp(): {
+	app: App;
+	vault: FakeVault;
+	workspace: FakeWorkspace;
+} {
 	const vault = new FakeVault();
-	const app = { vault: vault as unknown as Vault } as App;
-	return { app, vault };
+	const workspace = new FakeWorkspace();
+	const app = {
+		vault: vault as unknown as Vault,
+		workspace: workspace as unknown as Workspace,
+	} as App;
+	return { app, vault, workspace };
 }
 
 function parentOf(path: string): string {
