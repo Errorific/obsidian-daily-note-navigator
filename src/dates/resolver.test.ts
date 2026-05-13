@@ -17,48 +17,48 @@ describe("resolve - worked examples from docs/design/folder-layout.md", () => {
 	it("mid-quarter daily note: 2026-05-11", () => {
 		expect(resolve(localDate(2026, 4, 11), "daily")).toEqual<Resolved>({
 			folder: "Journal/2026/Q2/W20",
-			filename: "2026-05-11.md",
-			path: "Journal/2026/Q2/W20/2026-05-11.md",
+			filename: "2026-05-11 Monday.md",
+			path: "Journal/2026/Q2/W20/2026-05-11 Monday.md",
 		});
 	});
 
 	it("week-spanning-quarter boundary, late side: 2026-03-30 is in Q2/W14", () => {
 		expect(resolve(localDate(2026, 2, 30), "daily")).toEqual<Resolved>({
 			folder: "Journal/2026/Q2/W14",
-			filename: "2026-03-30.md",
-			path: "Journal/2026/Q2/W14/2026-03-30.md",
+			filename: "2026-03-30 Monday.md",
+			path: "Journal/2026/Q2/W14/2026-03-30 Monday.md",
 		});
 	});
 
 	it("week-spanning-quarter boundary, early side: 2026-03-29 is in Q1/W13", () => {
 		expect(resolve(localDate(2026, 2, 29), "daily")).toEqual<Resolved>({
 			folder: "Journal/2026/Q1/W13",
-			filename: "2026-03-29.md",
-			path: "Journal/2026/Q1/W13/2026-03-29.md",
+			filename: "2026-03-29 Sunday.md",
+			path: "Journal/2026/Q1/W13/2026-03-29 Sunday.md",
 		});
 	});
 
 	it("year boundary: 2026-12-30 is in 2026/Q4/W53", () => {
 		expect(resolve(localDate(2026, 11, 30), "daily")).toEqual<Resolved>({
 			folder: "Journal/2026/Q4/W53",
-			filename: "2026-12-30.md",
-			path: "Journal/2026/Q4/W53/2026-12-30.md",
+			filename: "2026-12-30 Wednesday.md",
+			path: "Journal/2026/Q4/W53/2026-12-30 Wednesday.md",
 		});
 	});
 
 	it("year boundary: 2027-01-01 files under 2026/Q4/W53 (ISO week-year)", () => {
 		expect(resolve(localDate(2027, 0, 1), "daily")).toEqual<Resolved>({
 			folder: "Journal/2026/Q4/W53",
-			filename: "2027-01-01.md",
-			path: "Journal/2026/Q4/W53/2027-01-01.md",
+			filename: "2027-01-01 Friday.md",
+			path: "Journal/2026/Q4/W53/2027-01-01 Friday.md",
 		});
 	});
 
 	it("first week of a new ISO year: 2027-01-04 in 2027/Q1/W01", () => {
 		expect(resolve(localDate(2027, 0, 4), "daily")).toEqual<Resolved>({
 			folder: "Journal/2027/Q1/W01",
-			filename: "2027-01-04.md",
-			path: "Journal/2027/Q1/W01/2027-01-04.md",
+			filename: "2027-01-04 Monday.md",
+			path: "Journal/2027/Q1/W01/2027-01-04 Monday.md",
 		});
 	});
 
@@ -85,16 +85,16 @@ describe("resolve - quarter boundaries", () => {
 	it("Q2/Q3 boundary, early side: 2026-06-28 (Sun) sits in Q2/W26", () => {
 		expect(resolve(localDate(2026, 5, 28), "daily")).toEqual<Resolved>({
 			folder: "Journal/2026/Q2/W26",
-			filename: "2026-06-28.md",
-			path: "Journal/2026/Q2/W26/2026-06-28.md",
+			filename: "2026-06-28 Sunday.md",
+			path: "Journal/2026/Q2/W26/2026-06-28 Sunday.md",
 		});
 	});
 
 	it("Q2/Q3 boundary, late side: 2026-06-29 (Mon) sits in Q3/W27", () => {
 		expect(resolve(localDate(2026, 5, 29), "daily")).toEqual<Resolved>({
 			folder: "Journal/2026/Q3/W27",
-			filename: "2026-06-29.md",
-			path: "Journal/2026/Q3/W27/2026-06-29.md",
+			filename: "2026-06-29 Monday.md",
+			path: "Journal/2026/Q3/W27/2026-06-29 Monday.md",
 		});
 	});
 
@@ -102,8 +102,8 @@ describe("resolve - quarter boundaries", () => {
 		// Thursday of this week is 2026-10-01.
 		expect(resolve(localDate(2026, 8, 28), "daily")).toEqual<Resolved>({
 			folder: "Journal/2026/Q4/W40",
-			filename: "2026-09-28.md",
-			path: "Journal/2026/Q4/W40/2026-09-28.md",
+			filename: "2026-09-28 Monday.md",
+			path: "Journal/2026/Q4/W40/2026-09-28 Monday.md",
 		});
 	});
 
@@ -111,8 +111,8 @@ describe("resolve - quarter boundaries", () => {
 		// Thursday of this week is 2026-09-24.
 		expect(resolve(localDate(2026, 8, 27), "daily")).toEqual<Resolved>({
 			folder: "Journal/2026/Q3/W39",
-			filename: "2026-09-27.md",
-			path: "Journal/2026/Q3/W39/2026-09-27.md",
+			filename: "2026-09-27 Sunday.md",
+			path: "Journal/2026/Q3/W39/2026-09-27 Sunday.md",
 		});
 	});
 });
@@ -121,24 +121,24 @@ describe("resolve - year boundaries", () => {
 	it("2025-12-29 (Mon) files under Journal/2026/Q1/W01 (December date, next ISO year)", () => {
 		expect(resolve(localDate(2025, 11, 29), "daily")).toEqual<Resolved>({
 			folder: "Journal/2026/Q1/W01",
-			filename: "2025-12-29.md",
-			path: "Journal/2026/Q1/W01/2025-12-29.md",
+			filename: "2025-12-29 Monday.md",
+			path: "Journal/2026/Q1/W01/2025-12-29 Monday.md",
 		});
 	});
 
 	it("2027-01-02 (Sat) files under Journal/2026/Q4/W53", () => {
 		expect(resolve(localDate(2027, 0, 2), "daily")).toEqual<Resolved>({
 			folder: "Journal/2026/Q4/W53",
-			filename: "2027-01-02.md",
-			path: "Journal/2026/Q4/W53/2027-01-02.md",
+			filename: "2027-01-02 Saturday.md",
+			path: "Journal/2026/Q4/W53/2027-01-02 Saturday.md",
 		});
 	});
 
 	it("2027-01-03 (Sun) is the last day of 2026's ISO week 53", () => {
 		expect(resolve(localDate(2027, 0, 3), "daily")).toEqual<Resolved>({
 			folder: "Journal/2026/Q4/W53",
-			filename: "2027-01-03.md",
-			path: "Journal/2026/Q4/W53/2027-01-03.md",
+			filename: "2027-01-03 Sunday.md",
+			path: "Journal/2026/Q4/W53/2027-01-03 Sunday.md",
 		});
 	});
 
@@ -146,8 +146,8 @@ describe("resolve - year boundaries", () => {
 		// Thursday of this week is 2020-12-31.
 		expect(resolve(localDate(2020, 11, 28), "daily")).toEqual<Resolved>({
 			folder: "Journal/2020/Q4/W53",
-			filename: "2020-12-28.md",
-			path: "Journal/2020/Q4/W53/2020-12-28.md",
+			filename: "2020-12-28 Monday.md",
+			path: "Journal/2020/Q4/W53/2020-12-28 Monday.md",
 		});
 	});
 
@@ -155,8 +155,8 @@ describe("resolve - year boundaries", () => {
 		// Thursday is 2025-01-02; ISO week-year 2025.
 		expect(resolve(localDate(2024, 11, 30), "daily")).toEqual<Resolved>({
 			folder: "Journal/2025/Q1/W01",
-			filename: "2024-12-30.md",
-			path: "Journal/2025/Q1/W01/2024-12-30.md",
+			filename: "2024-12-30 Monday.md",
+			path: "Journal/2025/Q1/W01/2024-12-30 Monday.md",
 		});
 	});
 });
@@ -239,8 +239,8 @@ describe("resolve - root override", () => {
 	it("respects a custom root", () => {
 		expect(resolve(localDate(2026, 4, 11), "daily", "Diary")).toEqual<Resolved>({
 			folder: "Diary/2026/Q2/W20",
-			filename: "2026-05-11.md",
-			path: "Diary/2026/Q2/W20/2026-05-11.md",
+			filename: "2026-05-11 Monday.md",
+			path: "Diary/2026/Q2/W20/2026-05-11 Monday.md",
 		});
 	});
 });

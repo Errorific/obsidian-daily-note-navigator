@@ -8,7 +8,7 @@ function localDate(year: number, monthIndex: number, day: number): Date {
 
 describe("recognizePath -- happy paths", () => {
 	it("recognises a daily note and anchors to the filename's date", () => {
-		const result = recognizePath("Journal/2026/Q2/W20/2026-05-11.md");
+		const result = recognizePath("Journal/2026/Q2/W20/2026-05-11 Monday.md");
 		expect(result).toEqual({ period: "daily", anchor: localDate(2026, 4, 11) });
 	});
 
@@ -34,7 +34,7 @@ describe("recognizePath -- happy paths", () => {
 
 	it("round-trips: recognised anchor resolved by resolve() returns the same path", () => {
 		for (const path of [
-			"Journal/2026/Q2/W20/2026-05-11.md",
+			"Journal/2026/Q2/W20/2026-05-11 Monday.md",
 			"Journal/2026/Q2/W20/W20.md",
 			"Journal/2026/Q2/Q2.md",
 			"Journal/2026/2026.md",
@@ -49,12 +49,12 @@ describe("recognizePath -- happy paths", () => {
 
 describe("recognizePath -- non-matching paths", () => {
 	it("returns undefined for files outside the Journal root", () => {
-		expect(recognizePath("Notes/2026/Q2/W20/2026-05-11.md")).toBeUndefined();
+		expect(recognizePath("Notes/2026/Q2/W20/2026-05-11 Monday.md")).toBeUndefined();
 	});
 
 	it("returns undefined for a daily filename in the wrong folder depth", () => {
 		// Missing the W?? folder
-		expect(recognizePath("Journal/2026/Q2/2026-05-11.md")).toBeUndefined();
+		expect(recognizePath("Journal/2026/Q2/2026-05-11 Monday.md")).toBeUndefined();
 	});
 
 	it("returns undefined when the weekly filename and folder do not agree", () => {
@@ -70,7 +70,20 @@ describe("recognizePath -- non-matching paths", () => {
 	});
 
 	it("returns undefined for an invalid date in a daily filename", () => {
-		expect(recognizePath("Journal/2026/Q2/W20/2026-02-30.md")).toBeUndefined();
+		expect(
+			recognizePath("Journal/2026/Q2/W20/2026-02-30 Monday.md"),
+		).toBeUndefined();
+	});
+
+	it("returns undefined when the day name does not match the date", () => {
+		// 2026-05-11 is a Monday, not Tuesday.
+		expect(
+			recognizePath("Journal/2026/Q2/W20/2026-05-11 Tuesday.md"),
+		).toBeUndefined();
+	});
+
+	it("returns undefined for a bare YYYY-MM-DD daily filename (legacy format)", () => {
+		expect(recognizePath("Journal/2026/Q2/W20/2026-05-11.md")).toBeUndefined();
 	});
 
 	it("returns undefined for an out-of-range ISO week (W53 of 2025)", () => {
@@ -85,7 +98,7 @@ describe("recognizePath -- non-matching paths", () => {
 
 	it("accepts a custom root", () => {
 		const result = recognizePath(
-			"Custom/2026/Q2/W20/2026-05-11.md",
+			"Custom/2026/Q2/W20/2026-05-11 Monday.md",
 			"Custom",
 		);
 		expect(result?.period).toBe("daily");

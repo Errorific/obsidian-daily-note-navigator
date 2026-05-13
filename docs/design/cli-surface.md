@@ -71,13 +71,13 @@ Resolve the path of a periodic note. **Does not touch the vault.**
 Output (text):
 
 ```
-Journal/2026/Q2/W20/2026-05-11.md
+Journal/2026/Q2/W20/2026-05-11 Monday.md
 ```
 
 Output (JSON):
 
 ```json
-{"ok": true, "path": "Journal/2026/Q2/W20/2026-05-11.md"}
+{"ok": true, "path": "Journal/2026/Q2/W20/2026-05-11 Monday.md"}
 ```
 
 Use cases: "where would this note live?", input for downstream tools that
@@ -97,14 +97,14 @@ Resolve the path and check whether the file exists in the vault. **Read-only.**
 Output (text), one of:
 
 ```
-exists: Journal/2026/Q2/W20/2026-05-11.md
-missing: Journal/2026/Q2/W20/2026-05-11.md
+exists: Journal/2026/Q2/W20/2026-05-11 Monday.md
+missing: Journal/2026/Q2/W20/2026-05-11 Monday.md
 ```
 
 Output (JSON):
 
 ```json
-{"ok": true, "path": "Journal/2026/Q2/W20/2026-05-11.md", "exists": true}
+{"ok": true, "path": "Journal/2026/Q2/W20/2026-05-11 Monday.md", "exists": true}
 ```
 
 The text form puts the status first so simple consumers can match on it
@@ -130,16 +130,16 @@ optionally creates and/or opens the note.
 Output (text), one of:
 
 ```
-existed: Journal/2026/Q2/W20/2026-05-11.md
-created: Journal/2026/Q2/W20/2026-05-11.md
-missing: Journal/2026/Q2/W20/2026-05-11.md     # when create was not set
+existed: Journal/2026/Q2/W20/2026-05-11 Monday.md
+created: Journal/2026/Q2/W20/2026-05-11 Monday.md
+missing: Journal/2026/Q2/W20/2026-05-11 Monday.md     # when create was not set
 ```
 
 Output (JSON):
 
 ```json
 {"ok": true,
- "path": "Journal/2026/Q2/W20/2026-05-11.md",
+ "path": "Journal/2026/Q2/W20/2026-05-11 Monday.md",
  "existed": false, "created": true, "opened": true}
 ```
 

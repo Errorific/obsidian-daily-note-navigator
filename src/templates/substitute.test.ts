@@ -9,8 +9,8 @@ const SAMPLE: Context = {
 	week: "20",
 	anchor_date: "2026-05-11",
 	folder: "Journal/2026/Q2/W20",
-	filename: "2026-05-11",
-	path: "Journal/2026/Q2/W20/2026-05-11.md",
+	filename: "2026-05-11 Monday",
+	path: "Journal/2026/Q2/W20/2026-05-11 Monday.md",
 };
 
 describe("substituteMarkers - known markers", () => {
@@ -21,8 +21,8 @@ describe("substituteMarkers - known markers", () => {
 		{ marker: "{{dnn.week}}", value: "20" },
 		{ marker: "{{dnn.anchor_date}}", value: "2026-05-11" },
 		{ marker: "{{dnn.folder}}", value: "Journal/2026/Q2/W20" },
-		{ marker: "{{dnn.filename}}", value: "2026-05-11" },
-		{ marker: "{{dnn.path}}", value: "Journal/2026/Q2/W20/2026-05-11.md" },
+		{ marker: "{{dnn.filename}}", value: "2026-05-11 Monday" },
+		{ marker: "{{dnn.path}}", value: "Journal/2026/Q2/W20/2026-05-11 Monday.md" },
 	])("$marker -> $value", ({ marker, value }) => {
 		expect(substituteMarkers(marker, SAMPLE)).toBe(value);
 	});
@@ -43,12 +43,12 @@ describe("substituteMarkers - known markers", () => {
 			"---",
 			"period: daily",
 			"date: 2026-05-11",
-			"path: Journal/2026/Q2/W20/2026-05-11.md",
+			"path: Journal/2026/Q2/W20/2026-05-11 Monday.md",
 			"---",
 			"",
 			"# 2026-W20 (Q2)",
 			"",
-			"Filed under Journal/2026/Q2/W20 as 2026-05-11.",
+			"Filed under Journal/2026/Q2/W20 as 2026-05-11 Monday.",
 		].join("\n");
 		expect(substituteMarkers(template, SAMPLE)).toBe(expected);
 	});

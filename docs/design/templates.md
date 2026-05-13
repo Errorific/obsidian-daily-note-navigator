@@ -293,10 +293,10 @@ For a creation with `period = daily` and `anchor = 2026-05-11`:
 | `{{dnn.year}}`         | `2026`  (ISO week-year)                |
 | `{{dnn.quarter}}`      | `2`                                    |
 | `{{dnn.week}}`         | `20`    (zero-padded ISO week)         |
-| `{{dnn.anchor_date}}`  | `2026-05-11`                           |
-| `{{dnn.folder}}`       | `Journal/2026/Q2/W20`                  |
-| `{{dnn.filename}}`     | `2026-05-11` (no extension)            |
-| `{{dnn.path}}`         | `Journal/2026/Q2/W20/2026-05-11.md`    |
+| `{{dnn.anchor_date}}`  | `2026-05-11`                                |
+| `{{dnn.folder}}`       | `Journal/2026/Q2/W20`                       |
+| `{{dnn.filename}}`     | `2026-05-11 Monday` (no extension)          |
+| `{{dnn.path}}`         | `Journal/2026/Q2/W20/2026-05-11 Monday.md`  |
 
 For non-daily periods, `anchor_date` is the canonical anchor of the
 period: a date that the resolver maps back to the same folder when fed
@@ -421,7 +421,7 @@ surprise. Notes we create are notes we control.
 
 ```
 $ obsidian dnn:find period=daily create
-created: Journal/2026/Q2/W20/2026-05-11.md
+created: Journal/2026/Q2/W20/2026-05-11 Monday.md
 ```
 
 Settings have `templates.daily = "Templates/Daily.md"`. Templater is
@@ -432,7 +432,7 @@ resolved path.
 
 ```
 $ obsidian dnn:find period=daily create template=Templates/Bare.md
-created: Journal/2026/Q2/W20/2026-05-11.md
+created: Journal/2026/Q2/W20/2026-05-11 Monday.md
 ```
 
 `Templates/Bare.md` is used instead of the configured one. Templater still

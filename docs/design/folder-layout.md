@@ -19,7 +19,7 @@ Journal/
       Q{quarter}.md              -- quarterly note
       W{week}/
         W{week}.md               -- weekly note
-        {YYYY-MM-DD}.md          -- daily notes (one per day)
+        {YYYY-MM-DD} {DayName}.md  -- daily notes (one per day)
 ```
 
 `{year}` is the **ISO week-year**, not the calendar year of the date. For
@@ -30,15 +30,17 @@ daily notes this matters at year-boundary weeks only (see worked examples).
 `{week}` is the ISO week number, zero-padded to two digits (`W01` ... `W53`).
 
 `{YYYY-MM-DD}` is the calendar date of the daily note, in ISO format.
+`{DayName}` is the full English day-of-week name (`Sunday`..`Saturday`) derived
+from that date.
 
 Filename casing and formatting:
 
-| Period    | Filename     | Example         |
-|-----------|--------------|-----------------|
-| daily     | `YYYY-MM-DD` | `2026-05-11.md` |
-| weekly    | `W{ww}`      | `W20.md`        |
-| quarterly | `Q{q}`       | `Q2.md`         |
-| yearly    | `{yyyy}`     | `2026.md`       |
+| Period    | Filename                | Example                  |
+|-----------|-------------------------|--------------------------|
+| daily     | `YYYY-MM-DD {DayName}`  | `2026-05-11 Monday.md`   |
+| weekly    | `W{ww}`                 | `W20.md`                 |
+| quarterly | `Q{q}`                  | `Q2.md`                  |
+| yearly    | `{yyyy}`                | `2026.md`                |
 
 ## Anchor-date identity model
 
@@ -69,7 +71,7 @@ type Period = 'daily' | 'weekly' | 'quarterly' | 'yearly';
 
 interface Resolved {
   folder: string;     // e.g. "Journal/2026/Q2/W20"
-  filename: string;   // e.g. "2026-05-11.md"
+  filename: string;   // e.g. "2026-05-11 Monday.md"
   path: string;       // folder + "/" + filename
 }
 
@@ -98,14 +100,14 @@ read or write the vault; it does not depend on Obsidian APIs.
 `date = 2026-05-11` (Mon, ISO week 20, Thursday 2026-05-14)
 
 - isoYear = 2026, isoWeek = 20, quarter = 2
-- Result: `Journal/2026/Q2/W20/2026-05-11.md`
+- Result: `Journal/2026/Q2/W20/2026-05-11 Monday.md`
 
 ### Week-spanning-quarter boundary, falling on the late side
 
 `date = 2026-03-30` (Mon, ISO week 14, Thursday 2026-04-02)
 
 - isoYear = 2026, isoWeek = 14, quarter = **2** (Thursday is in April)
-- Result: `Journal/2026/Q2/W14/2026-03-30.md`
+- Result: `Journal/2026/Q2/W14/2026-03-30 Monday.md`
 - Note: filename reads as a March date but folder is Q2.
 
 ### Week-spanning-quarter boundary, falling on the early side
@@ -113,21 +115,21 @@ read or write the vault; it does not depend on Obsidian APIs.
 `date = 2026-03-29` (Sun, ISO week 13, Thursday 2026-03-26)
 
 - isoYear = 2026, isoWeek = 13, quarter = 1
-- Result: `Journal/2026/Q1/W13/2026-03-29.md`
+- Result: `Journal/2026/Q1/W13/2026-03-29 Sunday.md`
 
 ### Year boundary -- December date in the following ISO year's folder is *not* what happens
 
 `date = 2026-12-30` (Wed, ISO week 53, Thursday 2026-12-31)
 
 - isoYear = 2026, isoWeek = 53, quarter = 4
-- Result: `Journal/2026/Q4/W53/2026-12-30.md`
+- Result: `Journal/2026/Q4/W53/2026-12-30 Wednesday.md`
 
 ### Year boundary -- January date in the previous calendar year's folder
 
 `date = 2027-01-01` (Fri, ISO week 53 of 2026, Thursday 2026-12-31)
 
 - isoYear = **2026**, isoWeek = 53, quarter = 4
-- Result: `Journal/2026/Q4/W53/2027-01-01.md`
+- Result: `Journal/2026/Q4/W53/2027-01-01 Friday.md`
 - This is the surprising case: a 2027 filename in a 2026 folder. It's
   correct -- the ISO week containing 2027-01-01 belongs to ISO week-year
   2026, and we never split a week across folders.
@@ -137,7 +139,7 @@ read or write the vault; it does not depend on Obsidian APIs.
 `date = 2027-01-04` (Mon, ISO week 1, Thursday 2027-01-07)
 
 - isoYear = 2027, isoWeek = 1, quarter = 1
-- Result: `Journal/2027/Q1/W01/2027-01-04.md`
+- Result: `Journal/2027/Q1/W01/2027-01-04 Monday.md`
 
 ### Quarterly note
 
