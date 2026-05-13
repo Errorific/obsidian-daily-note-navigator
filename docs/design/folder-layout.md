@@ -164,7 +164,7 @@ Lookup strings the LLM (or a human) might use:
 |---------------|------------------------------|---------------------------------|
 | `2026-05-11`  | 2026-05-11                   | daily note                      |
 | `2026/W20`    | Monday of ISO W20 2026       | weekly note                     |
-| `2026/Q2`     | First day of Apr 2026 (Q2)   | quarterly note                  |
+| `2026/Q2`     | 2026-05-15 (mid-quarter)     | quarterly note                  |
 | `2026`        | 2026-01-01 (any-day-in-year) | yearly note                     |
 
 The parser is also a pure function:
@@ -184,6 +184,13 @@ Invalid references throw; the resolve function never receives invalid input.
   yearly resolver should be careful: it interprets its input as "the ISO
   week-year I want" and is implemented by computing from a date that
   unambiguously lies inside it, e.g. July 1st of that year.
+- **Quarterly anchor and calendar-quarter mismatch.** The same boundary
+  problem applies to quarters. A "first day of Q1 2027" anchor of
+  2027-01-01 (Fri) has its ISO Thursday on 2026-12-31, so the resolver
+  would file it under `Journal/2026/Q4/`. Reference parsing therefore
+  uses the 15th of the middle month of the requested quarter (Feb 15 /
+  May 15 / Aug 15 / Nov 15) -- a date that unambiguously lies inside the
+  calendar quarter regardless of how its ISO week is laid out.
 - **Daylight saving / timezone.** All date math operates in the user's local
   timezone (Obsidian convention). We do not normalise to UTC. ISO week
   computation is timezone-stable so long as the input date is interpreted
