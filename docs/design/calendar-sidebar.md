@@ -28,15 +28,18 @@ References:
 
 The header shows:
 
-- Month navigation (`<`, month name + year, `>`).
-- A **Today button** that resets the view to the current month and
-  focuses today's daily cell. Always visible, regardless of which month
-  is displayed.
-- A link for the displayed month's **calendar quarter** (e.g. `Q2`).
-- A link for the displayed month's **calendar year** (e.g. `2026`).
+- The displayed month name (plain text -- we have no monthly notes, so
+  it does not link anywhere) followed by the displayed year as a link
+  to that year's yearly note.
+- A row of icon-only controls (prev month, today, next month). No
+  always-visible borders or backgrounds: hover effects only, in keeping
+  with the rest of Obsidian's chrome.
 
 The grid:
 
+- The top-left header cell holds the displayed month's **calendar
+  quarter** (e.g. `Q2`) as a link to that quarterly note. This sits
+  where a "WK" label would otherwise go and saves a header row.
 - One row per ISO week that intersects the displayed month.
 - Leftmost column is the **ISO week number** (`W18`-style, but rendered
   compactly as just the digits). Clicking opens that week's weekly note.
@@ -46,14 +49,14 @@ The grid:
 
 ## Click targets
 
-| Element                 | Action                                              |
-|-------------------------|-----------------------------------------------------|
-| Day cell                | Open daily note for that date.                      |
-| Week-number cell        | Open weekly note for that ISO week.                 |
-| Header `Q{n}` link      | Open quarterly note for the month's calendar quarter. |
-| Header year link        | Open yearly note for the month's calendar year.    |
-| Month name              | Open a date-picker modal to jump to any month.      |
-| Today button            | Reset the view to the current month and focus today.|
+| Element                       | Action                                                |
+|-------------------------------|-------------------------------------------------------|
+| Day cell                      | Open daily note for that date.                        |
+| Week-number cell              | Open weekly note for that ISO week.                   |
+| Grid `Q{n}` link (top-left)   | Open quarterly note for the month's calendar quarter. |
+| Header year link              | Open yearly note for the month's calendar year.       |
+| Today icon button             | Reset the view to the current month and focus today.  |
+| Prev / next icon buttons      | Step the displayed month back or forward.             |
 
 **Important**: the header's `Q` and year reflect the **calendar** month
 being displayed, but the cells' resolver follows the ISO-Thursday rule.
