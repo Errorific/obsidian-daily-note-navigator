@@ -11,3 +11,4 @@ conclusions inline.
 
 - [Existing periodic-note plugins](existing-plugins.md) -- survey of periodic-notes, obsidian-journal, daily-note-calendar and what each gets wrong.
 - [Obsidian CLI extension API](cli-extension-api.md) -- how `Plugin.registerCliHandler` works (Obsidian 1.12.2+) and patterns from Templater / QuickAdd.
+- [Marker anchor semantics](marker-anchor-semantics.md) -- open question on whether `{{dnn.year}} / quarter / week` should derive from the input anchor or the canonical anchor.
