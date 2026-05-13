@@ -120,7 +120,7 @@ export function registerCommands(plugin: PluginWithSettings): void {
 	});
 }
 
-async function openForAnchor(
+export async function openForAnchor(
 	plugin: PluginWithSettings,
 	anchor: Date,
 	period: Period,
@@ -162,7 +162,7 @@ async function openPrevNext(
 	await openForAnchor(plugin, nextAnchor, recognized.period);
 }
 
-function todayAtNoon(): Date {
+export function todayAtNoon(): Date {
 	const now = new Date();
 	return new Date(
 		now.getFullYear(),

@@ -1,6 +1,10 @@
 import { Plugin, type WorkspaceLeaf } from "obsidian";
 import { registerCliHandlers } from "./cli/register";
-import { registerCommands } from "./commands/register";
+import {
+	openForAnchor,
+	registerCommands,
+	todayAtNoon,
+} from "./commands/register";
 import { DEFAULT_SETTINGS, Settings } from "./settings";
 import { CALENDAR_VIEW_TYPE, CalendarView } from "./ui/calendar-view";
 import { SettingsTab } from "./ui/settings-tab";
@@ -24,6 +28,10 @@ export default class DailyNoteNavigator extends Plugin {
 			callback: () => {
 				void this.revealCalendar();
 			},
+		});
+
+		this.addRibbonIcon("calendar-check", "Open today's daily note", () => {
+			void openForAnchor(this, todayAtNoon(), "daily");
 		});
 
 		this.addSettingTab(new SettingsTab(this.app, this));
