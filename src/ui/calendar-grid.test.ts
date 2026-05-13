@@ -10,28 +10,61 @@ function noon(year: number, monthIndex: number, day: number): Date {
 }
 
 describe("buildMonthGrid", () => {
-	it("renders May 2026 as five Mon-Sun rows W18..W22", () => {
+	it("always renders exactly 6 rows", () => {
+		// Spot-check across months with different boundary shapes.
+		expect(buildMonthGrid(2026, 4, noon(2026, 4, 13))).toHaveLength(6);
+		expect(buildMonthGrid(2026, 6, noon(2026, 4, 13))).toHaveLength(6);
+		expect(buildMonthGrid(2010, 1, noon(2010, 1, 1))).toHaveLength(6);
+		expect(buildMonthGrid(2027, 0, noon(2026, 4, 13))).toHaveLength(6);
+		expect(buildMonthGrid(2021, 4, noon(2026, 4, 13))).toHaveLength(6);
+	});
+
+	it("renders May 2026 starting at W18 and extending into W23 (Jun 1-7)", () => {
 		const rows = buildMonthGrid(2026, 4, noon(2026, 4, 13));
-		expect(rows).toHaveLength(5);
-		expect(rows.map((r) => r.isoWeek)).toEqual([18, 19, 20, 21, 22]);
-		expect(rows[0]?.days[0]?.date.getDate()).toBe(27); // Mon Apr 27
+		expect(rows.map((r) => r.isoWeek)).toEqual([18, 19, 20, 21, 22, 23]);
+		// First row Monday = Apr 27 (prev-month overlap).
+		expect(rows[0]?.days[0]?.date.getDate()).toBe(27);
 		expect(rows[0]?.days[0]?.inDisplayedMonth).toBe(false);
-		expect(rows[0]?.days[4]?.date.getDate()).toBe(1); // Fri May 1
-		expect(rows[0]?.days[4]?.inDisplayedMonth).toBe(true);
-		expect(rows[4]?.days[6]?.date.getDate()).toBe(31); // Sun May 31
-		expect(rows[4]?.days[6]?.inDisplayedMonth).toBe(true);
+		// Last row Monday = Jun 1 (next-month overlap).
+		expect(rows[5]?.days[0]?.date.getMonth()).toBe(5);
+		expect(rows[5]?.days[0]?.date.getDate()).toBe(1);
+		expect(rows[5]?.days[6]?.date.getDate()).toBe(7);
+	});
+
+	it("shifts back when the 1st is a Monday so the top row is prev-month", () => {
+		// June 2026: Jun 1 is Monday. Without the shift, row 0 would be Jun 1-7
+		// and have no previous-month overlap. The shift produces W22 (May 25-31).
+		const rows = buildMonthGrid(2026, 5, noon(2026, 4, 13));
+		expect(rows[0]?.isoWeek).toBe(22);
+		expect(rows[0]?.days[0]?.date.getMonth()).toBe(4); // May
+		expect(rows[0]?.days[0]?.date.getDate()).toBe(25);
+		expect(rows[0]?.days[6]?.date.getDate()).toBe(31);
+		// Row 1 is the first row of June.
+		expect(rows[1]?.days[0]?.date.getMonth()).toBe(5);
+		expect(rows[1]?.days[0]?.date.getDate()).toBe(1);
 	});
 
 	it("marks today's cell when today falls in the displayed month", () => {
 		const rows = buildMonthGrid(2026, 4, noon(2026, 4, 13));
-		const flat = rows.flatMap((r) => r.days);
-		const todayCells = flat.filter((d) => d.isToday);
+		const todayCells = rows
+			.flatMap((r) => r.days)
+			.filter((d) => d.isToday);
 		expect(todayCells).toHaveLength(1);
 		expect(todayCells[0]?.date.getDate()).toBe(13);
 		expect(todayCells[0]?.date.getMonth()).toBe(4);
 	});
 
-	it("does not mark today when today is in a different month", () => {
+	it("can mark today on an adjacent-month cell of the displayed view", () => {
+		// Showing April 2026 with today = May 1 (Fri). May 1 is the 5th cell of
+		// the last natural-overlap row, plus the 6th-row padding shows further
+		// May days; both are marked when matching.
+		const rows = buildMonthGrid(2026, 3, noon(2026, 4, 1));
+		const todays = rows.flatMap((r) => r.days).filter((d) => d.isToday);
+		expect(todays).toHaveLength(1);
+		expect(todays[0]?.inDisplayedMonth).toBe(false);
+	});
+
+	it("does not mark today when today is in a different month and not visible", () => {
 		const rows = buildMonthGrid(2026, 0, noon(2026, 4, 13));
 		const todayCells = rows.flatMap((r) => r.days).filter((d) => d.isToday);
 		expect(todayCells).toHaveLength(0);
@@ -48,28 +81,22 @@ describe("buildMonthGrid", () => {
 		expect(leadingFri?.inDisplayedMonth).toBe(true);
 	});
 
-	it("displays W53 2026 as a row inside December 2026", () => {
+	it("includes W53 2026 inside the December 2026 grid", () => {
 		const rows = buildMonthGrid(2026, 11, noon(2026, 4, 13));
-		const lastRow = rows[rows.length - 1];
-		expect(lastRow?.isoYear).toBe(2026);
-		expect(lastRow?.isoWeek).toBe(53);
-		// Sun Jan 3 2027 sits at the end of W53.
-		expect(lastRow?.days[6]?.date.getFullYear()).toBe(2027);
-		expect(lastRow?.days[6]?.inDisplayedMonth).toBe(false);
+		const weeks = rows.map((r) => `${r.isoYear}-W${r.isoWeek}`);
+		expect(weeks).toContain("2026-W53");
+		expect(weeks).toContain("2027-W1");
 	});
 
-	it("renders Feb 2010 as exactly four rows", () => {
-		// Rare case: Feb 1 2010 is a Monday and Feb 28 is a Sunday, so the grid
-		// is exactly 4 ISO weeks tall with no overflow into adjacent months.
+	it("renders Feb 2010 as W4..W9 with the 1st-is-Monday shift applied", () => {
 		const rows = buildMonthGrid(2010, 1, noon(2010, 1, 1));
-		expect(rows).toHaveLength(4);
-		expect(rows[0]?.isoWeek).toBe(5);
-		expect(rows[3]?.isoWeek).toBe(8);
-		// All 28 cells fall inside the displayed month.
-		const outside = rows
-			.flatMap((r) => r.days)
-			.filter((d) => !d.inDisplayedMonth);
-		expect(outside).toHaveLength(0);
+		expect(rows.map((r) => r.isoWeek)).toEqual([4, 5, 6, 7, 8, 9]);
+		// W4 is fully prev-month (Jan 25-31).
+		const w4Days = rows[0]?.days ?? [];
+		expect(w4Days.every((d) => !d.inDisplayedMonth)).toBe(true);
+		// W9 is fully next-month (Mar 1-7).
+		const w9Days = rows[5]?.days ?? [];
+		expect(w9Days.every((d) => !d.inDisplayedMonth)).toBe(true);
 	});
 
 	it("does not mutate the today argument", () => {

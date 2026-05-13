@@ -8,9 +8,7 @@
 import {
 	type App,
 	ItemView,
-	Modal,
 	Notice,
-	Setting,
 	type TFile,
 	type WorkspaceLeaf,
 	debounce,
@@ -145,18 +143,6 @@ export class CalendarView extends ItemView {
 				this.displayedMonthIndex = t.getMonth();
 				this.render();
 			},
-			onMonthPick: () => {
-				new PickMonthModal(
-					this.app,
-					this.displayedYear,
-					this.displayedMonthIndex,
-					(year, monthIndex) => {
-						this.displayedYear = year;
-						this.displayedMonthIndex = monthIndex;
-						this.render();
-					},
-				).open();
-			},
 		});
 	}
 
@@ -277,65 +263,3 @@ function messageOf(err: unknown): string {
 	return String(err);
 }
 
-class PickMonthModal extends Modal {
-	private value: string;
-	private readonly onSubmit: (year: number, monthIndex: number) => void;
-
-	constructor(
-		app: App,
-		year: number,
-		monthIndex: number,
-		onSubmit: (year: number, monthIndex: number) => void,
-	) {
-		super(app);
-		this.value = `${year}-${String(monthIndex + 1).padStart(2, "0")}`;
-		this.onSubmit = onSubmit;
-	}
-
-	override onOpen(): void {
-		const { contentEl } = this;
-		contentEl.empty();
-		contentEl.createEl("h3", { text: "Jump to month" });
-
-		new Setting(contentEl).setName("Month").addText((text) => {
-			// eslint-disable-next-line obsidianmd/ui/sentence-case
-			text.setPlaceholder("yyyy-mm")
-				.setValue(this.value)
-				.onChange((value) => {
-					this.value = value;
-				});
-			text.inputEl.type = "month";
-		});
-
-		new Setting(contentEl)
-			.addButton((btn) =>
-				btn.setButtonText("Cancel").onClick(() => {
-					this.close();
-				}),
-			)
-			.addButton((btn) =>
-				btn
-					.setButtonText("Go")
-					.setCta()
-					.onClick(() => {
-						const match = /^(\d{4})-(\d{2})$/.exec(this.value);
-						if (!match) {
-							notify("enter a date as yyyy-mm");
-							return;
-						}
-						const year = Number(match[1]);
-						const month = Number(match[2]);
-						if (month < 1 || month > 12) {
-							notify("month must be 01-12");
-							return;
-						}
-						this.close();
-						this.onSubmit(year, month - 1);
-					}),
-			);
-	}
-
-	override onClose(): void {
-		this.contentEl.empty();
-	}
-}

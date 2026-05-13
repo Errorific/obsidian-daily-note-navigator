@@ -26,24 +26,33 @@ export interface WeekRow {
 	days: DayCell[];
 }
 
+// Always returns 6 rows. The grid starts at the Monday of the ISO week
+// containing the month's 1st, except when the 1st itself is a Monday: in
+// that case we shift one week earlier so the top row provides previous-
+// month overlap. The 6-row depth then naturally extends one week past
+// months whose last day is a Sunday, giving next-month overlap at the
+// bottom too. A consistent 6-row height also keeps the sidebar from
+// reflowing as the user navigates between months.
+const GRID_ROWS = 6;
+
 export function buildMonthGrid(
 	displayedYear: number,
 	displayedMonthIndex: number,
 	today: Date,
 ): WeekRow[] {
 	const firstOfMonth = atLocalNoon(displayedYear, displayedMonthIndex, 1);
-	// Day 0 of next month = last day of this month.
-	const lastOfMonth = atLocalNoon(displayedYear, displayedMonthIndex + 1, 0);
+	let cursor = mondayContaining(firstOfMonth);
+	if (isoWeekdayOf(firstOfMonth) === 1) {
+		cursor = atLocalNoon(
+			cursor.getFullYear(),
+			cursor.getMonth(),
+			cursor.getDate() - 7,
+		);
+	}
 
-	const firstMonday = mondayContaining(firstOfMonth);
 	const todayKey = ymdKey(today);
-
 	const rows: WeekRow[] = [];
-	let cursor = firstMonday;
-	// Inclusive: keep building rows while the row's Monday is on or before
-	// the month's last day. The last row may extend into the next month --
-	// those cells are dimmed but still clickable.
-	while (cursor.getTime() <= lastOfMonth.getTime()) {
+	for (let r = 0; r < GRID_ROWS; r++) {
 		const days: DayCell[] = [];
 		for (let i = 0; i < 7; i++) {
 			const date = atLocalNoon(
@@ -94,12 +103,15 @@ function atLocalNoon(year: number, monthIndex: number, day: number): Date {
 }
 
 function mondayContaining(date: Date): Date {
-	const isoWeekday = date.getDay() === 0 ? 7 : date.getDay();
 	return atLocalNoon(
 		date.getFullYear(),
 		date.getMonth(),
-		date.getDate() - (isoWeekday - 1),
+		date.getDate() - (isoWeekdayOf(date) - 1),
 	);
+}
+
+function isoWeekdayOf(date: Date): number {
+	return date.getDay() === 0 ? 7 : date.getDay();
 }
 
 function ymdKey(date: Date): string {

@@ -6,6 +6,7 @@
 // interface so the view layer can open files, swap leaves, and read modifier
 // keys without this module needing to know about Obsidian.
 
+import { setIcon } from "obsidian";
 import type { Period } from "../dates/resolver";
 import { calendarQuarterOf, type WeekRow } from "./calendar-grid";
 
@@ -24,7 +25,7 @@ const MONTH_NAMES = [
 	"December",
 ];
 
-const WEEKDAY_HEADERS = ["M", "T", "W", "T", "F", "S", "S"];
+const WEEKDAY_HEADERS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 export interface ActiveSelection {
 	period: Period;
@@ -57,7 +58,6 @@ export interface CalendarCallbacks {
 	onPrevMonth: () => void;
 	onNextMonth: () => void;
 	onToday: () => void;
-	onMonthPick: () => void;
 }
 
 export function renderCalendar(
@@ -72,52 +72,84 @@ export function renderCalendar(
 	renderGrid(container, vm, cb);
 }
 
+// Sidebar leaves consume the first `click` event when they aren't currently
+// focused -- the click activates the leaf rather than reaching nested
+// handlers, so the user has to click twice to open anything. Listening on
+// `mousedown` instead fires before the focus rearrangement and makes every
+// click responsive. We only honour the primary (0) and middle (1) buttons.
+function onActivate(el: HTMLElement, handler: (evt: MouseEvent) => void): void {
+	el.addEventListener("mousedown", (evt) => {
+		if (evt.button !== 0 && evt.button !== 1) return;
+		evt.preventDefault();
+		handler(evt);
+	});
+}
+
 function renderHeader(
 	container: HTMLElement,
 	vm: CalendarViewModel,
 	cb: CalendarCallbacks,
 ): void {
 	const header = container.createDiv({ cls: "dnn-calendar-header" });
-
-	const nav = header.createDiv({ cls: "dnn-calendar-nav" });
-	const prev = nav.createEl("button", {
-		cls: "dnn-calendar-nav-button",
-		attr: { "aria-label": "Previous month" },
-	});
-	prev.setText("<");
-	prev.addEventListener("click", cb.onPrevMonth);
-
-	const monthLabel = nav.createEl("button", {
-		cls: "dnn-calendar-month-label",
-		attr: { "aria-label": "Pick month" },
-	});
-	monthLabel.setText(
-		`${MONTH_NAMES[vm.displayedMonthIndex]} ${vm.displayedYear}`,
-	);
-	monthLabel.addEventListener("click", cb.onMonthPick);
-
-	const next = nav.createEl("button", {
-		cls: "dnn-calendar-nav-button",
-		attr: { "aria-label": "Next month" },
-	});
-	next.setText(">");
-	next.addEventListener("click", cb.onNextMonth);
-
-	const todayBtn = nav.createEl("button", {
-		cls: "dnn-calendar-today-button",
-	});
-	todayBtn.setText("Today");
-	todayBtn.addEventListener("click", cb.onToday);
-
-	const periodLinks = header.createDiv({ cls: "dnn-calendar-period-links" });
-	const quarter = calendarQuarterOf(vm.displayedMonthIndex);
 	const year = vm.displayedYear;
 
-	const quarterLink = periodLinks.createEl("a", {
-		cls: "dnn-calendar-quarter-link",
-		href: "#",
+	const title = header.createDiv({ cls: "dnn-calendar-title" });
+	title.createSpan({
+		cls: "dnn-calendar-month",
+		text: MONTH_NAMES[vm.displayedMonthIndex],
 	});
-	quarterLink.setText(`Q${quarter}`);
+	const yearLink = title.createEl("a", {
+		cls: "dnn-calendar-year-link",
+		text: String(year),
+	});
+	if (vm.yearExists(year)) yearLink.addClass("dnn-has-note");
+	if (vm.active?.period === "yearly" && vm.active.calendarYear === year) {
+		yearLink.addClass("dnn-current");
+	}
+	onActivate(yearLink, (evt) => cb.onYearClick(year, evt));
+
+	const actions = header.createDiv({ cls: "dnn-calendar-actions" });
+	const prev = actions.createEl("a", {
+		cls: "dnn-calendar-icon-button",
+		attr: { "aria-label": "Previous month", role: "button" },
+	});
+	prev.setText("‹");
+	onActivate(prev, () => cb.onPrevMonth());
+
+	const todayBtn = actions.createEl("a", {
+		cls: "dnn-calendar-icon-button",
+		attr: { "aria-label": "Today", role: "button" },
+	});
+	setIcon(todayBtn, "crosshair");
+	onActivate(todayBtn, () => cb.onToday());
+
+	const next = actions.createEl("a", {
+		cls: "dnn-calendar-icon-button",
+		attr: { "aria-label": "Next month", role: "button" },
+	});
+	next.setText("›");
+	onActivate(next, () => cb.onNextMonth());
+}
+
+function renderGrid(
+	container: HTMLElement,
+	vm: CalendarViewModel,
+	cb: CalendarCallbacks,
+): void {
+	const year = vm.displayedYear;
+	const quarter = calendarQuarterOf(vm.displayedMonthIndex);
+
+	const table = container.createEl("table", { cls: "dnn-calendar-grid" });
+	const thead = table.createEl("thead");
+	const headerRow = thead.createEl("tr");
+
+	const quarterHeader = headerRow.createEl("th", {
+		cls: "dnn-calendar-quarter-header",
+	});
+	const quarterLink = quarterHeader.createEl("a", {
+		cls: "dnn-calendar-quarter-link",
+		text: `Q${quarter}`,
+	});
 	if (vm.quarterExists(year, quarter)) {
 		quarterLink.addClass("dnn-has-note");
 	}
@@ -128,40 +160,8 @@ function renderHeader(
 	) {
 		quarterLink.addClass("dnn-current");
 	}
-	quarterLink.addEventListener("click", (evt) => {
-		evt.preventDefault();
-		cb.onQuarterClick(year, quarter, evt);
-	});
+	onActivate(quarterLink, (evt) => cb.onQuarterClick(year, quarter, evt));
 
-	const yearLink = periodLinks.createEl("a", {
-		cls: "dnn-calendar-year-link",
-		href: "#",
-	});
-	yearLink.setText(String(year));
-	if (vm.yearExists(year)) {
-		yearLink.addClass("dnn-has-note");
-	}
-	if (
-		vm.active?.period === "yearly" &&
-		vm.active.calendarYear === year
-	) {
-		yearLink.addClass("dnn-current");
-	}
-	yearLink.addEventListener("click", (evt) => {
-		evt.preventDefault();
-		cb.onYearClick(year, evt);
-	});
-}
-
-function renderGrid(
-	container: HTMLElement,
-	vm: CalendarViewModel,
-	cb: CalendarCallbacks,
-): void {
-	const table = container.createEl("table", { cls: "dnn-calendar-grid" });
-	const thead = table.createEl("thead");
-	const headerRow = thead.createEl("tr");
-	headerRow.createEl("th", { cls: "dnn-calendar-wk-header", text: "WK" });
 	for (const label of WEEKDAY_HEADERS) {
 		headerRow.createEl("th", { text: label });
 	}
@@ -181,15 +181,11 @@ function renderGrid(
 		const wkLink = wkCell.createEl("a", {
 			cls: "dnn-calendar-week-link",
 			text: String(row.isoWeek).padStart(2, "0"),
-			href: "#",
 		});
 		if (vm.weekExists(row.isoYear, row.isoWeek)) {
 			wkLink.addClass("dnn-has-note");
 		}
-		wkLink.addEventListener("click", (evt) => {
-			evt.preventDefault();
-			cb.onWeekClick(row.isoYear, row.isoWeek, evt);
-		});
+		onActivate(wkLink, (evt) => cb.onWeekClick(row.isoYear, row.isoWeek, evt));
 
 		for (const day of row.days) {
 			const td = tr.createEl("td", { cls: "dnn-calendar-day-cell" });
@@ -204,22 +200,13 @@ function renderGrid(
 			}
 			const link = td.createEl("a", {
 				cls: "dnn-calendar-day-link",
-				text: String(day.date.getDate()),
-				href: "#",
+				text: String(day.date.getDate()).padStart(2, "0"),
 			});
 			if (vm.dayExists(day.date)) {
 				link.addClass("dnn-has-note");
 			}
 			const capturedDate = day.date;
-			link.addEventListener("click", (evt) => {
-				evt.preventDefault();
-				cb.onDayClick(capturedDate, evt);
-			});
-			link.addEventListener("auxclick", (evt) => {
-				if (evt.button !== 1) return;
-				evt.preventDefault();
-				cb.onDayClick(capturedDate, evt);
-			});
+			onActivate(link, (evt) => cb.onDayClick(capturedDate, evt));
 		}
 	}
 }
