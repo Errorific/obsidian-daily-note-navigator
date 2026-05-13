@@ -148,10 +148,11 @@ function parseFormat(params: CliData): Format {
 }
 
 function parseSelectors(params: CliData): { anchor: Date; period: Period } {
-	const periodRaw = params.period;
-	if (periodRaw === undefined) {
-		throw new Error("period is required");
-	}
+	// The Obsidian CLI framework rejects calls missing `period=` before our
+	// handler runs (with `Missing required parameter: period=<...>` plus a
+	// generated usage line), so by the time we reach this code period is
+	// always defined.
+	const periodRaw = params.period as string;
 	if (!isPeriod(periodRaw)) {
 		throw new Error(
 			`unknown period '${periodRaw}' (expected ${PERIODS.join(", ")})`,

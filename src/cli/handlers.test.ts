@@ -87,12 +87,6 @@ describe("handlePath", () => {
 		expect(out).toBe("Error: date and ref are mutually exclusive");
 	});
 
-	it("errors when period is missing", async () => {
-		const deps = depsFrom(makeApp());
-		const out = await handlePath(deps, params({}));
-		expect(out).toBe("Error: period is required");
-	});
-
 	it("errors on unknown period", async () => {
 		const deps = depsFrom(makeApp());
 		const out = await handlePath(deps, params({ period: "monthly" }));

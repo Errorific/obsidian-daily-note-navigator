@@ -176,7 +176,6 @@ matching the Templater pattern. JSON mode returns
 
 - Invalid period: `Error: unknown period 'foo' (expected daily, weekly, quarterly, yearly)`
 - Invalid ref for period: `Error: ref '2026/Q2' is not valid for period 'weekly'`
-- Missing required selector when needed: `Error: period is required`
 - Template not found: `Error: template 'Templates/Daily.md' not found`
 - Templater failure: `Error: Templater: <Templater's own error message>`
 
