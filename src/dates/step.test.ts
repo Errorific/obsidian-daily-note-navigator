@@ -70,12 +70,12 @@ describe("stepAnchor", () => {
 
 describe("stepAnchor -- composes with the resolver", () => {
 	it("daily step changes the resolved daily filename by one day", () => {
-		const start = "Journal/2026/Q2/W20/2026-05-11.md";
+		const start = "Journal/2026/Q2/W20/2026-05-11 Monday.md";
 		const r = recognizePath(start);
 		expect(r).toBeDefined();
 		const next = stepAnchor(r!.anchor, "daily", 1);
 		expect(resolve(next, "daily").path).toBe(
-			"Journal/2026/Q2/W20/2026-05-12.md",
+			"Journal/2026/Q2/W20/2026-05-12 Tuesday.md",
 		);
 	});
 

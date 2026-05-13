@@ -66,7 +66,7 @@ These can disagree at boundary weeks, and they should:
 - The header's year link goes to `Journal/2027/2027.md`.
 - The W53 row's week link goes to `Journal/2026/Q4/W53/W53.md`.
 - A day cell for `1` (2027-01-01) in that row goes to
-  `Journal/2026/Q4/W53/2027-01-01.md`.
+  `Journal/2026/Q4/W53/2027-01-01 Friday.md`.
 
 That's correct -- those are three different time concepts. The view
 simply makes each one navigable to the right place via the resolver.

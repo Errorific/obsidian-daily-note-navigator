@@ -234,3 +234,23 @@
 .dnn-calendar-quarter-link.dnn-has-note::after {
 	bottom: -2px;
 }
+
+/* ------- Settings tab ------- */
+
+.dnn-settings-path-invalid {
+	border-color: var(--text-error);
+}
+
+.dnn-settings-path-invalid:focus {
+	box-shadow: 0 0 0 2px var(--background-modifier-error);
+}
+
+.dnn-settings-path-error:empty {
+	display: none;
+}
+
+.dnn-settings-path-error {
+	color: var(--text-error);
+	margin-top: var(--size-2-1);
+	font-size: var(--font-ui-smaller);
+}

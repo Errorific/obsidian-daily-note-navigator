@@ -3,6 +3,7 @@ import { registerCliHandlers } from "./cli/register";
 import { registerCommands } from "./commands/register";
 import { DEFAULT_SETTINGS, Settings } from "./settings";
 import { CALENDAR_VIEW_TYPE, CalendarView } from "./ui/calendar-view";
+import { SettingsTab } from "./ui/settings-tab";
 
 export default class DailyNoteNavigator extends Plugin {
 	settings!: Settings;
@@ -24,6 +25,21 @@ export default class DailyNoteNavigator extends Plugin {
 				void this.revealCalendar();
 			},
 		});
+
+		this.addSettingTab(new SettingsTab(this.app, this));
+
+		this.app.workspace.onLayoutReady(() => {
+			void this.ensureCalendarLeaf();
+		});
+	}
+
+	private async ensureCalendarLeaf(): Promise<void> {
+		if (this.app.workspace.getLeavesOfType(CALENDAR_VIEW_TYPE).length > 0) {
+			return;
+		}
+		const leaf = this.app.workspace.getRightLeaf(false);
+		if (leaf === null) return;
+		await leaf.setViewState({ type: CALENDAR_VIEW_TYPE, active: false });
 	}
 
 	onunload() {}

@@ -260,8 +260,8 @@ describe("parseRef - yearly", () => {
 
 describe("parseRef - end-to-end through resolve", () => {
 	it.each<{ ref: string; period: Parameters<typeof parseRef>[1]; path: string }>([
-		{ ref: "2026-05-11", period: "daily", path: "Journal/2026/Q2/W20/2026-05-11.md" },
-		{ ref: "2027-01-01", period: "daily", path: "Journal/2026/Q4/W53/2027-01-01.md" },
+		{ ref: "2026-05-11", period: "daily", path: "Journal/2026/Q2/W20/2026-05-11 Monday.md" },
+		{ ref: "2027-01-01", period: "daily", path: "Journal/2026/Q4/W53/2027-01-01 Friday.md" },
 		{ ref: "2026/W20", period: "weekly", path: "Journal/2026/Q2/W20/W20.md" },
 		{ ref: "2026/Q2", period: "quarterly", path: "Journal/2026/Q2/Q2.md" },
 		{ ref: "2026", period: "yearly", path: "Journal/2026/2026.md" },

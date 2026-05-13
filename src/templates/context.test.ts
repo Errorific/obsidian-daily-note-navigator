@@ -18,8 +18,8 @@ describe("buildContext - daily", () => {
 			week: "20",
 			anchor_date: "2026-05-11",
 			folder: "Journal/2026/Q2/W20",
-			filename: "2026-05-11",
-			path: "Journal/2026/Q2/W20/2026-05-11.md",
+			filename: "2026-05-11 Monday",
+			path: "Journal/2026/Q2/W20/2026-05-11 Monday.md",
 		});
 	});
 
@@ -149,7 +149,7 @@ describe("buildContext - boundaries", () => {
 		expect(ctx.quarter).toBe("4");
 		expect(ctx.week).toBe("53");
 		expect(ctx.anchor_date).toBe("2027-01-01");
-		expect(ctx.filename).toBe("2027-01-01");
+		expect(ctx.filename).toBe("2027-01-01 Friday");
 		expect(ctx.folder).toBe("Journal/2026/Q4/W53");
 	});
 

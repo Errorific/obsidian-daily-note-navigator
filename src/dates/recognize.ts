@@ -7,6 +7,7 @@
 
 import {
 	type Period,
+	dayNameOf,
 	isoWeekOf,
 	mondayOfIsoWeek,
 } from "./resolver";
@@ -18,7 +19,7 @@ export interface Recognized {
 
 const DEFAULT_ROOT = "Journal";
 
-const DAILY_FILENAME = /^(\d{4})-(\d{2})-(\d{2})\.md$/;
+const DAILY_FILENAME = /^(\d{4})-(\d{2})-(\d{2}) ([A-Za-z]+)\.md$/;
 const WEEKLY_FILENAME = /^W(\d{2})\.md$/;
 const QUARTERLY_FILENAME = /^Q([1-4])\.md$/;
 const YEARLY_FILENAME = /^(\d{4})\.md$/;
@@ -101,7 +102,13 @@ function recognizeDaily(
 	const yearStr = match[1];
 	const monthStr = match[2];
 	const dayStr = match[3];
-	if (yearStr === undefined || monthStr === undefined || dayStr === undefined) {
+	const dayNameStr = match[4];
+	if (
+		yearStr === undefined ||
+		monthStr === undefined ||
+		dayStr === undefined ||
+		dayNameStr === undefined
+	) {
 		return undefined;
 	}
 	const year = Number(yearStr);
@@ -113,6 +120,9 @@ function recognizeDaily(
 		date.getMonth() !== month - 1 ||
 		date.getDate() !== day
 	) {
+		return undefined;
+	}
+	if (dayNameStr !== dayNameOf(date)) {
 		return undefined;
 	}
 	return { period: "daily", anchor: date };

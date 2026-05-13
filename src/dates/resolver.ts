@@ -33,7 +33,7 @@ export function resolve(
 	switch (period) {
 		case "daily":
 			folder = `${root}/${yearStr}/Q${quarter}/W${weekStr}`;
-			filename = `${formatIsoDate(anchor)}.md`;
+			filename = `${formatDailyFilename(anchor)}.md`;
 			break;
 		case "weekly":
 			folder = `${root}/${yearStr}/Q${quarter}/W${weekStr}`;
@@ -108,4 +108,22 @@ export function formatIsoDate(date: Date): string {
 	const m = String(date.getMonth() + 1).padStart(2, "0");
 	const d = String(date.getDate()).padStart(2, "0");
 	return `${y}-${m}-${d}`;
+}
+
+const DAY_NAMES = [
+	"Sunday",
+	"Monday",
+	"Tuesday",
+	"Wednesday",
+	"Thursday",
+	"Friday",
+	"Saturday",
+] as const;
+
+export function dayNameOf(date: Date): string {
+	return DAY_NAMES[date.getDay()] as string;
+}
+
+export function formatDailyFilename(date: Date): string {
+	return `${formatIsoDate(date)} ${dayNameOf(date)}`;
 }
