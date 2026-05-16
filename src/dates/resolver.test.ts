@@ -64,17 +64,17 @@ describe("resolve - worked examples from docs/design/folder-layout.md", () => {
 
 	it("quarterly note for Q2 2026", () => {
 		expect(resolve(localDate(2026, 3, 15), "quarterly")).toEqual<Resolved>({
-			folder: "Journal/2026/Q2",
+			folder: "Journal/2026",
 			filename: "Q2.md",
-			path: "Journal/2026/Q2/Q2.md",
+			path: "Journal/2026/Q2.md",
 		});
 	});
 
 	it("yearly note for 2026", () => {
 		expect(resolve(localDate(2026, 6, 4), "yearly")).toEqual<Resolved>({
-			folder: "Journal/2026",
+			folder: "Journal",
 			filename: "2026.md",
-			path: "Journal/2026/2026.md",
+			path: "Journal/2026.md",
 		});
 	});
 });
@@ -164,25 +164,25 @@ describe("resolve - year boundaries", () => {
 describe("resolve - weekly notes", () => {
 	it("weekly note for ISO 2026-W20", () => {
 		expect(resolve(localDate(2026, 4, 11), "weekly")).toEqual<Resolved>({
-			folder: "Journal/2026/Q2/W20",
+			folder: "Journal/2026/Q2",
 			filename: "W20.md",
-			path: "Journal/2026/Q2/W20/W20.md",
+			path: "Journal/2026/Q2/W20.md",
 		});
 	});
 
 	it("weekly note for ISO 2026-W53 from a 2027 calendar date", () => {
 		expect(resolve(localDate(2027, 0, 1), "weekly")).toEqual<Resolved>({
-			folder: "Journal/2026/Q4/W53",
+			folder: "Journal/2026/Q4",
 			filename: "W53.md",
-			path: "Journal/2026/Q4/W53/W53.md",
+			path: "Journal/2026/Q4/W53.md",
 		});
 	});
 
 	it("weekly note zero-pads single-digit week numbers", () => {
 		expect(resolve(localDate(2027, 0, 4), "weekly")).toEqual<Resolved>({
-			folder: "Journal/2027/Q1/W01",
+			folder: "Journal/2027/Q1",
 			filename: "W01.md",
-			path: "Journal/2027/Q1/W01/W01.md",
+			path: "Journal/2027/Q1/W01.md",
 		});
 	});
 });
@@ -195,9 +195,9 @@ describe("resolve - quarterly notes", () => {
 		{ label: "Q4", date: localDate(2026, 9, 15), quarter: 4 },
 	])("$label", ({ date, quarter }) => {
 		expect(resolve(date, "quarterly")).toEqual<Resolved>({
-			folder: `Journal/2026/Q${quarter}`,
+			folder: "Journal/2026",
 			filename: `Q${quarter}.md`,
-			path: `Journal/2026/Q${quarter}/Q${quarter}.md`,
+			path: `Journal/2026/Q${quarter}.md`,
 		});
 	});
 });
@@ -205,26 +205,26 @@ describe("resolve - quarterly notes", () => {
 describe("resolve - yearly notes", () => {
 	it("2026 yearly", () => {
 		expect(resolve(localDate(2026, 6, 4), "yearly")).toEqual<Resolved>({
-			folder: "Journal/2026",
+			folder: "Journal",
 			filename: "2026.md",
-			path: "Journal/2026/2026.md",
+			path: "Journal/2026.md",
 		});
 	});
 
 	it("2027 yearly", () => {
 		expect(resolve(localDate(2027, 6, 4), "yearly")).toEqual<Resolved>({
-			folder: "Journal/2027",
+			folder: "Journal",
 			filename: "2027.md",
-			path: "Journal/2027/2027.md",
+			path: "Journal/2027.md",
 		});
 	});
 
 	it("yearly anchor reports the ISO week-year, not the calendar year", () => {
 		// 2027-01-01 belongs to ISO week-year 2026.
 		expect(resolve(localDate(2027, 0, 1), "yearly")).toEqual<Resolved>({
-			folder: "Journal/2026",
+			folder: "Journal",
 			filename: "2026.md",
-			path: "Journal/2026/2026.md",
+			path: "Journal/2026.md",
 		});
 	});
 });

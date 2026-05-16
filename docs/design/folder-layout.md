@@ -13,14 +13,19 @@ References:
 
 ```
 Journal/
+  {year}.md                      -- yearly note
   {year}/
-    {year}.md                    -- yearly note
+    Q{quarter}.md                -- quarterly note
     Q{quarter}/
-      Q{quarter}.md              -- quarterly note
+      W{week}.md                 -- weekly note
       W{week}/
-        W{week}.md               -- weekly note
         {YYYY-MM-DD} {DayName}.md  -- daily notes (one per day)
 ```
+
+Each non-daily periodic note sits as a sibling of the folder that contains
+its children, rather than nested inside it. So the yearly note lives
+alongside the year folder, the quarterly note alongside its quarter folder,
+and the weekly note alongside its week folder.
 
 `{year}` is the **ISO week-year**, not the calendar year of the date. For
 daily notes this matters at year-boundary weeks only (see worked examples).
@@ -85,9 +90,10 @@ Implementation outline (all values derived from `date`):
 3. `isoWeek` = ISO week number of `date` (equivalently, of `T`).
 4. `quarter` = `Math.floor(T.getMonth() / 3) + 1`.
 5. Build the folder per the structure diagram above based on the period:
-   - daily / weekly: `Journal/{isoYear}/Q{quarter}/W{isoWeek:02}`
-   - quarterly:      `Journal/{isoYear}/Q{quarter}`
-   - yearly:         `Journal/{isoYear}`
+   - daily:     `Journal/{isoYear}/Q{quarter}/W{isoWeek:02}`
+   - weekly:    `Journal/{isoYear}/Q{quarter}`
+   - quarterly: `Journal/{isoYear}`
+   - yearly:    `Journal`
 6. Filename per the table above.
 
 The function is total (no exceptions for valid `Date` inputs). It does not
@@ -146,17 +152,17 @@ read or write the vault; it does not depend on Obsidian APIs.
 `date = 2026-04-15` (anchor for Q2 2026)
 
 - isoYear = 2026 (T = 2026-04-16, Thu), quarter = 2
-- Result folder: `Journal/2026/Q2`
+- Result folder: `Journal/2026`
 - Filename: `Q2.md`
-- Path: `Journal/2026/Q2/Q2.md`
+- Path: `Journal/2026/Q2.md`
 
 ### Yearly note
 
 `date = 2026-07-04` (any date in 2026, but note we use the ISO week-year)
 
-- isoYear = 2026 (T = 2026-07-02, Thu), folder = `Journal/2026`
+- isoYear = 2026 (T = 2026-07-02, Thu), folder = `Journal`
 - Filename: `2026.md`
-- Path: `Journal/2026/2026.md`
+- Path: `Journal/2026.md`
 
 ## Parsing human-friendly references
 

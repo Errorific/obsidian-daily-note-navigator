@@ -53,3 +53,4 @@ What follows from this decision -- both positive and negative.
 | 2026-05-11 | [ISO 8601 week, quarter, and year boundary rules](2026-05-11-iso-week-period-boundaries.md) | accepted |
 | 2026-05-11 | [No monthly notes in v1](2026-05-11-no-monthly-notes.md) | accepted |
 | 2026-05-11 | [Templater is a soft dependency](2026-05-11-templater-soft-dependency.md) | accepted |
+| 2026-05-16 | [Flat periodic note layout](2026-05-16-flat-periodic-note-layout.md) | accepted |

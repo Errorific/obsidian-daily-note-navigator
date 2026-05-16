@@ -32,7 +32,7 @@ export function recognizePath(
 	root: string = DEFAULT_ROOT,
 ): Recognized | undefined {
 	const parts = path.split("/");
-	if (parts.length < 3 || parts[0] !== root) {
+	if (parts.length < 2 || parts[0] !== root) {
 		return undefined;
 	}
 	const filename = parts[parts.length - 1] ?? "";
@@ -53,11 +53,6 @@ export function recognizePath(
 		if (dailyMatch) {
 			return recognizeDaily(yearFolder, quarterFolder, weekFolder, dailyMatch);
 		}
-
-		const weeklyMatch = WEEKLY_FILENAME.exec(filename);
-		if (weeklyMatch) {
-			return recognizeWeekly(yearFolder, quarterFolder, weekFolder, weeklyMatch);
-		}
 	}
 
 	if (parts.length === 4) {
@@ -66,9 +61,9 @@ export function recognizePath(
 		if (yearFolder === undefined || quarterFolder === undefined) {
 			return undefined;
 		}
-		const quarterlyMatch = QUARTERLY_FILENAME.exec(filename);
-		if (quarterlyMatch) {
-			return recognizeQuarterly(yearFolder, quarterFolder, quarterlyMatch);
+		const weeklyMatch = WEEKLY_FILENAME.exec(filename);
+		if (weeklyMatch) {
+			return recognizeWeekly(yearFolder, quarterFolder, weeklyMatch);
 		}
 	}
 
@@ -77,9 +72,16 @@ export function recognizePath(
 		if (yearFolder === undefined) {
 			return undefined;
 		}
+		const quarterlyMatch = QUARTERLY_FILENAME.exec(filename);
+		if (quarterlyMatch) {
+			return recognizeQuarterly(yearFolder, quarterlyMatch);
+		}
+	}
+
+	if (parts.length === 2) {
 		const yearlyMatch = YEARLY_FILENAME.exec(filename);
 		if (yearlyMatch) {
-			return recognizeYearly(yearFolder, yearlyMatch);
+			return recognizeYearly(yearlyMatch);
 		}
 	}
 
@@ -131,22 +133,13 @@ function recognizeDaily(
 function recognizeWeekly(
 	yearFolder: string,
 	quarterFolder: string,
-	weekFolder: string,
 	match: RegExpExecArray,
 ): Recognized | undefined {
-	const folderWeekMatch = WEEK_FOLDER.exec(weekFolder);
-	if (folderWeekMatch === null) {
-		return undefined;
-	}
-	const folderWeekStr = folderWeekMatch[1];
-	const filenameWeekStr = match[1];
-	if (folderWeekStr === undefined || filenameWeekStr === undefined) {
-		return undefined;
-	}
-	if (folderWeekStr !== filenameWeekStr) {
-		return undefined;
-	}
 	if (!YEAR_FOLDER.test(yearFolder) || !QUARTER_FOLDER.test(quarterFolder)) {
+		return undefined;
+	}
+	const filenameWeekStr = match[1];
+	if (filenameWeekStr === undefined) {
 		return undefined;
 	}
 	const year = Number(yearFolder);
@@ -164,22 +157,13 @@ function recognizeWeekly(
 
 function recognizeQuarterly(
 	yearFolder: string,
-	quarterFolder: string,
 	match: RegExpExecArray,
 ): Recognized | undefined {
-	const folderQuarterMatch = QUARTER_FOLDER.exec(quarterFolder);
-	if (folderQuarterMatch === null) {
-		return undefined;
-	}
-	const folderQuarterStr = folderQuarterMatch[1];
-	const filenameQuarterStr = match[1];
-	if (folderQuarterStr === undefined || filenameQuarterStr === undefined) {
-		return undefined;
-	}
-	if (folderQuarterStr !== filenameQuarterStr) {
-		return undefined;
-	}
 	if (!YEAR_FOLDER.test(yearFolder)) {
+		return undefined;
+	}
+	const filenameQuarterStr = match[1];
+	if (filenameQuarterStr === undefined) {
 		return undefined;
 	}
 	const year = Number(yearFolder);
@@ -193,15 +177,9 @@ function recognizeQuarterly(
 	};
 }
 
-function recognizeYearly(
-	yearFolder: string,
-	match: RegExpExecArray,
-): Recognized | undefined {
+function recognizeYearly(match: RegExpExecArray): Recognized | undefined {
 	const filenameYearStr = match[1];
 	if (filenameYearStr === undefined) {
-		return undefined;
-	}
-	if (yearFolder !== filenameYearStr) {
 		return undefined;
 	}
 	const year = Number(filenameYearStr);

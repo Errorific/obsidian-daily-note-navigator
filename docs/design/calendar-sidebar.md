@@ -63,8 +63,8 @@ being displayed, but the cells' resolver follows the ISO-Thursday rule.
 These can disagree at boundary weeks, and they should:
 
 - Display showing January 2027 with W53 2026 as its leading row.
-- The header's year link goes to `Journal/2027/2027.md`.
-- The W53 row's week link goes to `Journal/2026/Q4/W53/W53.md`.
+- The header's year link goes to `Journal/2027.md`.
+- The W53 row's week link goes to `Journal/2026/Q4/W53.md`.
 - A day cell for `1` (2027-01-01) in that row goes to
   `Journal/2026/Q4/W53/2027-01-01 Friday.md`.
 
