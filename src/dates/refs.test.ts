@@ -88,14 +88,14 @@ describe("parseRef - weekly", () => {
 	it("parsed weekly anchor resolves back to the requested week", () => {
 		const anchor = parseRef("2026/W20", "weekly");
 		expect(resolve(anchor, "weekly").path).toBe(
-			"Journal/2026/Q2/W20/W20.md",
+			"Journal/2026/Q2/W20.md",
 		);
 	});
 
 	it("parsed W53-2026 anchor resolves back to W53", () => {
 		const anchor = parseRef("2026/W53", "weekly");
 		expect(resolve(anchor, "weekly").path).toBe(
-			"Journal/2026/Q4/W53/W53.md",
+			"Journal/2026/Q4/W53.md",
 		);
 	});
 
@@ -157,10 +157,10 @@ describe("parseRef - quarterly", () => {
 		{ ref: "2026/Q2", year: 2026, month: 4, quarter: 2 },
 		{ ref: "2026/Q3", year: 2026, month: 7, quarter: 3 },
 		{ ref: "2026/Q4", year: 2026, month: 10, quarter: 4 },
-	])("$ref resolves to Journal/$year/Q$quarter/Q$quarter.md", ({ ref, year, quarter }) => {
+	])("$ref resolves to Journal/$year/Q$quarter.md", ({ ref, year, quarter }) => {
 		const anchor = parseRef(ref, "quarterly");
 		expect(resolve(anchor, "quarterly").path).toBe(
-			`Journal/${year}/Q${quarter}/Q${quarter}.md`,
+			`Journal/${year}/Q${quarter}.md`,
 		);
 	});
 
@@ -169,7 +169,7 @@ describe("parseRef - quarterly", () => {
 		// anchor would mis-route 2027/Q1 to Journal/2026/Q4. The mid-quarter
 		// anchor (Feb 15) sidesteps the problem.
 		expect(resolve(parseRef("2027/Q1", "quarterly"), "quarterly").path).toBe(
-			"Journal/2027/Q1/Q1.md",
+			"Journal/2027/Q1.md",
 		);
 	});
 
@@ -209,15 +209,15 @@ describe("parseRef - yearly", () => {
 		expect(parseRef("2026", "yearly")).toEqual(localDate(2026, 6, 1));
 	});
 
-	it("resolved path matches Journal/{year}/{year}.md", () => {
+	it("resolved path matches Journal/{year}.md", () => {
 		expect(resolve(parseRef("2026", "yearly"), "yearly").path).toBe(
-			"Journal/2026/2026.md",
+			"Journal/2026.md",
 		);
 	});
 
 	it("resolves the next year correctly", () => {
 		expect(resolve(parseRef("2027", "yearly"), "yearly").path).toBe(
-			"Journal/2027/2027.md",
+			"Journal/2027.md",
 		);
 	});
 
@@ -262,9 +262,9 @@ describe("parseRef - end-to-end through resolve", () => {
 	it.each<{ ref: string; period: Parameters<typeof parseRef>[1]; path: string }>([
 		{ ref: "2026-05-11", period: "daily", path: "Journal/2026/Q2/W20/2026-05-11 Monday.md" },
 		{ ref: "2027-01-01", period: "daily", path: "Journal/2026/Q4/W53/2027-01-01 Friday.md" },
-		{ ref: "2026/W20", period: "weekly", path: "Journal/2026/Q2/W20/W20.md" },
-		{ ref: "2026/Q2", period: "quarterly", path: "Journal/2026/Q2/Q2.md" },
-		{ ref: "2026", period: "yearly", path: "Journal/2026/2026.md" },
+		{ ref: "2026/W20", period: "weekly", path: "Journal/2026/Q2/W20.md" },
+		{ ref: "2026/Q2", period: "quarterly", path: "Journal/2026/Q2.md" },
+		{ ref: "2026", period: "yearly", path: "Journal/2026.md" },
 	])("$ref ($period) -> $path", ({ ref, period, path }) => {
 		expect(resolve(parseRef(ref, period), period).path).toBe(path);
 	});

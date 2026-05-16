@@ -36,15 +36,15 @@ export function resolve(
 			filename = `${formatDailyFilename(anchor)}.md`;
 			break;
 		case "weekly":
-			folder = `${root}/${yearStr}/Q${quarter}/W${weekStr}`;
+			folder = `${root}/${yearStr}/Q${quarter}`;
 			filename = `W${weekStr}.md`;
 			break;
 		case "quarterly":
-			folder = `${root}/${yearStr}/Q${quarter}`;
+			folder = `${root}/${yearStr}`;
 			filename = `Q${quarter}.md`;
 			break;
 		case "yearly":
-			folder = `${root}/${yearStr}`;
+			folder = root;
 			filename = `${yearStr}.md`;
 			break;
 		default: {

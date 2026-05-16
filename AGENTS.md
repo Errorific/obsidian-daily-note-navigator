@@ -95,7 +95,7 @@ npm run build
 
 ## Versioning & releases
 
-- Bump `version` in `manifest.json` (SemVer) and update `versions.json` to map plugin version → minimum app version.
+- Bump `version` in `manifest.json` (SemVer). Run `npm version <patch|minor|major>`, which invokes `version-bump.mjs`: it updates `manifest.json` and appends to `versions.json` only when `minAppVersion` has changed. `versions.json` is a fallback table Obsidian consults for users on older app builds, not a per-release ledger -- sparse entries are intended.
 - Create a GitHub release whose tag exactly matches `manifest.json`'s `version`. Do not use a leading `v`.
 - Attach `manifest.json`, `main.js`, and `styles.css` (if present) to the release as individual assets.
 - After the initial release, follow the process to add/update your plugin in the community catalog as required.

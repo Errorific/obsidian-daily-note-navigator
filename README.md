@@ -39,12 +39,12 @@ Notes live under a fixed `Journal/` hierarchy in v1:
 
 ```
 Journal/
+  {year}.md
   {year}/
-    {year}.md
+    Q{quarter}.md
     Q{quarter}/
-      Q{quarter}.md
+      W{week}.md
       W{week}/
-        W{week}.md
         {YYYY-MM-DD} {DayName}.md
 ```
 

@@ -1,7 +1,7 @@
 {
 	"id": "daily-note-navigator",
 	"name": "Daily Note Navigator",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"minAppVersion": "1.12.2",
 	"description": "An Obsidian plugin for navigating daily and periodic notes.",
 	"author": "Chris Mckay",

@@ -80,22 +80,22 @@ describe("stepAnchor -- composes with the resolver", () => {
 	});
 
 	it("weekly step moves to the adjacent ISO week", () => {
-		const r = recognizePath("Journal/2026/Q2/W20/W20.md");
+		const r = recognizePath("Journal/2026/Q2/W20.md");
 		const next = stepAnchor(r!.anchor, "weekly", 1);
 		expect(resolve(next, "weekly").path).toBe(
-			"Journal/2026/Q2/W21/W21.md",
+			"Journal/2026/Q2/W21.md",
 		);
 	});
 
 	it("quarterly step moves to the adjacent quarter", () => {
-		const r = recognizePath("Journal/2026/Q2/Q2.md");
+		const r = recognizePath("Journal/2026/Q2.md");
 		const next = stepAnchor(r!.anchor, "quarterly", 1);
-		expect(resolve(next, "quarterly").path).toBe("Journal/2026/Q3/Q3.md");
+		expect(resolve(next, "quarterly").path).toBe("Journal/2026/Q3.md");
 	});
 
 	it("yearly step moves to the adjacent year", () => {
-		const r = recognizePath("Journal/2026/2026.md");
+		const r = recognizePath("Journal/2026.md");
 		const next = stepAnchor(r!.anchor, "yearly", 1);
-		expect(resolve(next, "yearly").path).toBe("Journal/2027/2027.md");
+		expect(resolve(next, "yearly").path).toBe("Journal/2027.md");
 	});
 });

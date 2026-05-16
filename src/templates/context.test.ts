@@ -39,7 +39,7 @@ describe("buildContext - weekly", () => {
 		expect(ctx.anchor_date).toBe("2026-05-11");
 		expect(ctx.week).toBe("20");
 		expect(ctx.filename).toBe("W20");
-		expect(ctx.path).toBe("Journal/2026/Q2/W20/W20.md");
+		expect(ctx.path).toBe("Journal/2026/Q2/W20.md");
 	});
 
 	it("zero-pads single-digit week numbers", () => {
@@ -57,8 +57,8 @@ describe("buildContext - quarterly", () => {
 		const ctx = buildContext(anchor, "quarterly", resolve(anchor, "quarterly"));
 		expect(ctx.anchor_date).toBe("2026-04-02");
 		expect(ctx.filename).toBe("Q2");
-		expect(ctx.folder).toBe("Journal/2026/Q2");
-		expect(ctx.path).toBe("Journal/2026/Q2/Q2.md");
+		expect(ctx.folder).toBe("Journal/2026");
+		expect(ctx.path).toBe("Journal/2026/Q2.md");
 	});
 
 	it.each<{ ref: Date; quarter: string; anchorDate: string }>([
@@ -84,7 +84,7 @@ describe("buildContext - quarterly", () => {
 		const anchor = localDate(2027, 1, 15);
 		const ctx = buildContext(anchor, "quarterly", resolve(anchor, "quarterly"));
 		expect(ctx.anchor_date).toBe("2027-01-07");
-		expect(ctx.path).toBe("Journal/2027/Q1/Q1.md");
+		expect(ctx.path).toBe("Journal/2027/Q1.md");
 	});
 
 	it("Q1 anchor is also correct when Jan 1 is a Saturday (2033)", () => {
@@ -120,8 +120,8 @@ describe("buildContext - yearly", () => {
 		expect(ctx.anchor_date).toBe("2026-07-01");
 		expect(ctx.year).toBe("2026");
 		expect(ctx.filename).toBe("2026");
-		expect(ctx.folder).toBe("Journal/2026");
-		expect(ctx.path).toBe("Journal/2026/2026.md");
+		expect(ctx.folder).toBe("Journal");
+		expect(ctx.path).toBe("Journal/2026.md");
 	});
 });
 
@@ -158,7 +158,7 @@ describe("buildContext - boundaries", () => {
 		const ctx = buildContext(anchor, "weekly", resolve(anchor, "weekly"));
 		expect(ctx.anchor_date).toBe("2026-12-28");
 		expect(ctx.week).toBe("53");
-		expect(ctx.folder).toBe("Journal/2026/Q4/W53");
+		expect(ctx.folder).toBe("Journal/2026/Q4");
 	});
 
 	it("year boundary: yearly anchor_date for 2027-01-01 is 2026-07-01 (ISO week-year)", () => {
