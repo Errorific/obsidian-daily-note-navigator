@@ -30,7 +30,8 @@ one elses. Expect low quality and bugs.
   Templater is installed, its `<% %>` tags are processed when a new
   note is created; otherwise the template is copied verbatim. Leave a
   field empty to create that period's notes as blank files.
-- **CLI.** `dnn:path`, `dnn:exists`, and `dnn:find` subcommands for the
+- **CLI.** `daily-note-navigator:path`, `daily-note-navigator:exists`, and
+  `daily-note-navigator:find` subcommands for the
   Obsidian CLI, intended for scripts and LLM workflows.
 
 ## Folder layout

@@ -35,7 +35,7 @@ input anchor depends on how the note was triggered.
 
 ## Worked examples (current behaviour)
 
-Triggering a quarterly note for Q2 2026 via `dnn:find period=quarterly
+Triggering a quarterly note for Q2 2026 via `daily-note-navigator:find period=quarterly
 ref=2026/Q2`. The ref parser uses mid-month of the middle month
 (2026-05-15), so:
 
@@ -52,7 +52,7 @@ that includes `# Q{{dnn.quarter}} {{dnn.year}}, starting in week
 "Starting in week 14" (the first week of Q2) would be the correct
 reading.
 
-Triggering a yearly note via `dnn:find period=yearly ref=2026`. The ref
+Triggering a yearly note via `daily-note-navigator:find period=yearly ref=2026`. The ref
 parser uses July 1, so:
 
 | Marker             | Value         |

@@ -1,6 +1,6 @@
 # CLI Surface
 
-The `dnn:*` Obsidian CLI subcommands exposed by this plugin. These are the
+The `daily-note-navigator:*` Obsidian CLI subcommands exposed by this plugin. These are the
 programmatic surface that LLMs, scripts, and power users invoke to navigate
 the journal.
 
@@ -17,12 +17,12 @@ References:
 
 - **One vocabulary.** Every subcommand uses the same selector parameters
   (`period`, `date`, `ref`) and the same period set. No exceptions.
-- **Pure resolution is free.** `dnn:path` does no I/O and never creates a
+- **Pure resolution is free.** `daily-note-navigator:path` does no I/O and never creates a
   file. Subcommands that touch the vault do so explicitly.
 - **Idempotent creation.** Creating a note that already exists is not an
   error. Callers can ask for the path and the existence flag back.
 - **Predictable output.** Default output is the resolved path on its own
-  line, so the typical pipeline `obsidian dnn:path date=today period=daily`
+  line, so the typical pipeline `obsidian daily-note-navigator:path date=today period=daily`
   is a path-emitting command. Structured callers ask for `format=json`.
 - **Errors as content.** The CLI handler contract is "return a string to
   stdout". We return `Error: <message>` in text mode and
@@ -31,7 +31,7 @@ References:
 
 ## Selector parameters
 
-All `dnn:*` subcommands accept the same set of selectors:
+All `daily-note-navigator:*` subcommands accept the same set of selectors:
 
 | Flag       | Type   | Purpose                                                  |
 |------------|--------|----------------------------------------------------------|
@@ -42,7 +42,7 @@ All `dnn:*` subcommands accept the same set of selectors:
 
 If neither `date` nor `ref` is given, the subcommand uses **today's local
 date** as the anchor. This is the common case for "open today's daily" and
-removes the need for a separate `dnn:today` subcommand.
+removes the need for a separate `daily-note-navigator:today` subcommand.
 
 `ref` strings are parsed per the period:
 
@@ -57,7 +57,7 @@ Mismatched ref/period (e.g. `period=weekly ref=2026/Q2`) returns an error.
 
 ## Subcommands
 
-### `dnn:path`
+### `daily-note-navigator:path`
 
 Resolve the path of a periodic note. **Does not touch the vault.**
 
@@ -83,7 +83,7 @@ Output (JSON):
 Use cases: "where would this note live?", input for downstream tools that
 will read or create the file themselves.
 
-### `dnn:exists`
+### `daily-note-navigator:exists`
 
 Resolve the path and check whether the file exists in the vault. **Read-only.**
 
@@ -111,7 +111,7 @@ The text form puts the status first so simple consumers can match on it
 without parsing. Both forms always include the path so the caller knows
 where the file would go even when missing.
 
-### `dnn:find`
+### `daily-note-navigator:find`
 
 The "find or create" workhorse. Resolves the path, checks existence, and
 optionally creates and/or opens the note.
@@ -152,7 +152,7 @@ file, Templater error), creation is aborted and the error is returned --
 the note is not left half-written. See the templates design doc for the
 exact failure semantics.
 
-### `dnn:list` (deferred)
+### `daily-note-navigator:list` (deferred)
 
 Listing all notes of a given period is potentially useful ("show me every
 quarterly note") but isn't on the v1 requirements list and the same query
@@ -160,7 +160,7 @@ can be done with the built-in `obsidian files folder=Journal`. Deferred.
 
 ## Default-template behaviour
 
-`dnn:find create` (and a future `dnn:create`, if added) uses the
+`daily-note-navigator:find create` (and a future `daily-note-navigator:create`, if added) uses the
 configured template for the period. If no template is configured and no
 `template=` flag is given, the note is created empty.
 
@@ -186,28 +186,28 @@ aren't part of the registerCliHandler contract.
 
 ```bash
 # Today's daily, just give me the path
-obsidian dnn:path period=daily
+obsidian daily-note-navigator:path period=daily
 
 # Where will this Friday's daily live?
-obsidian dnn:path period=daily date=2026-05-15
+obsidian daily-note-navigator:path period=daily date=2026-05-15
 
 # Is this week's weekly note started yet?
-obsidian dnn:exists period=weekly
+obsidian daily-note-navigator:exists period=weekly
 
 # Open Q2's quarterly note, creating it if missing
-obsidian dnn:find period=quarterly ref=2026/Q2 create open
+obsidian daily-note-navigator:find period=quarterly ref=2026/Q2 create open
 
 # JSON output for an LLM:
-obsidian dnn:find period=daily date=2026-05-11 create format=json
+obsidian daily-note-navigator:find period=daily date=2026-05-11 create format=json
 
 # Find the daily for a specific date by ISO ref (same as date= here)
-obsidian dnn:path period=daily ref=2026-05-11
+obsidian daily-note-navigator:path period=daily ref=2026-05-11
 ```
 
 ## Open questions
 
-- **`dnn:open` as a separate subcommand?** Right now `open` is a flag on
-  `dnn:find`. It might be more discoverable as its own subcommand mirroring
+- **`daily-note-navigator:open` as a separate subcommand?** Right now `open` is a flag on
+  `daily-note-navigator:find`. It might be more discoverable as its own subcommand mirroring
   the existing `daily` / `open` / `tab:open` set. Deferred until we see how
   it gets used.
 - **Should we accept `date=today`?** The built-in CLI uses `today`-style

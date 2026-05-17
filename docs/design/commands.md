@@ -84,7 +84,7 @@ All "open X" commands follow the same recipe:
 5. If template application fails, abort step 4 with a user notice; do not
    create a half-written file.
 
-This is the same flow the CLI's `dnn:find create open` invokes -- the
+This is the same flow the CLI's `daily-note-navigator:find create open` invokes -- the
 command palette commands are thin wrappers over it.
 
 ## Previous / next semantics
@@ -117,9 +117,9 @@ Pure lookups stay in the CLI.
 
 ## CLI parity
 
-Every "open" command palette command has a CLI equivalent (`dnn:find
-period=... create open`). The reverse isn't true -- the CLI's `dnn:path`
-and `dnn:exists` don't appear in the command palette. This matches the
+Every "open" command palette command has a CLI equivalent (`daily-note-navigator:find
+period=... create open`). The reverse isn't true -- the CLI's `daily-note-navigator:path`
+and `daily-note-navigator:exists` don't appear in the command palette. This matches the
 principle above.
 
 ## Open questions
