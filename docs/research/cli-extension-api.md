@@ -114,8 +114,10 @@ from its handlers, which is useful for programmatic consumers (LLMs, scripts).
   path-lookup subcommands a plain path string is probably sufficient and
   more shell-pipeline-friendly. The design doc for the CLI surface will
   pick per-subcommand.
-- **CLI namespace.** We use `dnn:` (short, distinct, easy to type). Plugin id
-  is separately `daily-note-navigator`.
+- **CLI namespace.** We use `daily-note-navigator:`, matching the plugin id
+  and consistent with Templater's `templater:` and QuickAdd's `quickadd:`.
+  The full id is self-documenting in shell history and scripts, and tab
+  completion makes the typing cost negligible.
 
 ## Related Obsidian CLI subcommands worth knowing
 

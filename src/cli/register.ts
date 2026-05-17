@@ -1,4 +1,4 @@
-// Registers the dnn:* Obsidian CLI subcommands. Schemas mirror
+// Registers the daily-note-navigator:* Obsidian CLI subcommands. Schemas mirror
 // docs/design/cli-surface.md; the actual work lives in ./handlers.ts so it
 // can be tested without a Plugin instance.
 
@@ -43,21 +43,21 @@ export function registerCliHandlers(plugin: PluginWithSettings): void {
 	};
 
 	plugin.registerCliHandler(
-		"dnn:path",
+		"daily-note-navigator:path",
 		"Resolve a periodic note's vault path. Does not touch the vault.",
 		{ ...SELECTOR_FLAGS },
 		async (params) => handlePath(deps, params),
 	);
 
 	plugin.registerCliHandler(
-		"dnn:exists",
+		"daily-note-navigator:exists",
 		"Check whether a periodic note exists in the vault.",
 		{ ...SELECTOR_FLAGS },
 		async (params) => handleExists(deps, params),
 	);
 
 	plugin.registerCliHandler(
-		"dnn:find",
+		"daily-note-navigator:find",
 		"Resolve, optionally create, and optionally open a periodic note.",
 		{
 			...SELECTOR_FLAGS,

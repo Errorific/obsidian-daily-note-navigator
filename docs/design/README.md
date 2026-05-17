@@ -7,7 +7,7 @@ Design docs are the living specs for how the plugin works. They describe
 the related [architectural decision records](../decisions/).
 
 - [Folder layout and date-to-path mapping](folder-layout.md) -- the pure function that maps `(date, period)` to a vault path.
-- [CLI surface](cli-surface.md) -- the `dnn:*` Obsidian-CLI subcommands.
+- [CLI surface](cli-surface.md) -- the `daily-note-navigator:*` Obsidian-CLI subcommands.
 - [Command palette surface](commands.md) -- the human-facing Obsidian commands.
 - [Templates and Templater integration](templates.md) -- how new notes get populated.
 - [Calendar sidebar view](calendar-sidebar.md) -- the side-panel month calendar.

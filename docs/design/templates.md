@@ -35,7 +35,7 @@ convention but don't enforce it.
 ## Creation flow
 
 The single canonical flow used by every code path that creates a periodic
-note (CLI's `dnn:find create`, command palette's "open X" commands, future
+note (CLI's `daily-note-navigator:find create`, command palette's "open X" commands, future
 "create X" commands):
 
 ```
@@ -328,12 +328,12 @@ for the period). For daily and weekly notes those are the same date so
 the markers describe the period unambiguously. For quarterly and yearly
 notes the input anchor depends on who is calling:
 
-- `dnn:find period=quarterly ref=2026/Q2` parses the ref to mid-month of
+- `daily-note-navigator:find period=quarterly ref=2026/Q2` parses the ref to mid-month of
   the middle month (May 15, 2026). The resulting markers are
   `year=2026`, `quarter=2`, `week=20` -- not the first week of Q2.
   `{{dnn.anchor_date}}` is the canonical `2026-04-02` (first Thursday of
   Q2) regardless.
-- `dnn:find period=yearly ref=2026` parses to July 1, 2026, so the
+- `daily-note-navigator:find period=yearly ref=2026` parses to July 1, 2026, so the
   markers are `year=2026`, `quarter=3`, `week=27`. `{{dnn.anchor_date}}`
   is `2026-07-01`.
 - A `date=YYYY-MM-DD` flag overrides the parsed anchor with the user's
@@ -420,7 +420,7 @@ surprise. Notes we create are notes we control.
 ### CLI find-or-create with default template
 
 ```
-$ obsidian dnn:find period=daily create
+$ obsidian daily-note-navigator:find period=daily create
 created: Journal/2026/Q2/W20/2026-05-11 Monday.md
 ```
 
@@ -431,7 +431,7 @@ resolved path.
 ### CLI find-or-create overriding the template
 
 ```
-$ obsidian dnn:find period=daily create template=Templates/Bare.md
+$ obsidian daily-note-navigator:find period=daily create template=Templates/Bare.md
 created: Journal/2026/Q2/W20/2026-05-11 Monday.md
 ```
 
@@ -447,7 +447,7 @@ for using Templater syntax in a vault without Templater.
 ### Failure: template path doesn't exist
 
 ```
-$ obsidian dnn:find period=daily create template=Templates/Missing.md
+$ obsidian daily-note-navigator:find period=daily create template=Templates/Missing.md
 Error: template 'Templates/Missing.md' not found
 ```
 
@@ -456,7 +456,7 @@ No file is created.
 ### Failure: Templater error
 
 ```
-$ obsidian dnn:find period=weekly create
+$ obsidian daily-note-navigator:find period=weekly create
 Error: Templater: Template parsing error: unexpected token at line 3
 ```
 
