@@ -8,6 +8,7 @@ the related [architectural decision records](../decisions/).
 
 - [Folder layout and date-to-path mapping](folder-layout.md) -- the pure function that maps `(date, period)` to a vault path.
 - [CLI surface](cli-surface.md) -- the `daily-note-navigator:*` Obsidian-CLI subcommands.
+- [Scripting API](scripting-api.md) -- the in-process `resolvePath` method for user scripts and other plugins.
 - [Command palette surface](commands.md) -- the human-facing Obsidian commands.
 - [Templates and Templater integration](templates.md) -- how new notes get populated.
 - [Calendar sidebar view](calendar-sidebar.md) -- the side-panel month calendar.

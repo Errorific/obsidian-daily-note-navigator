@@ -5,6 +5,7 @@ import {
 	registerCommands,
 	todayAtNoon,
 } from "./commands/register";
+import { type Period, resolve } from "./dates/resolver";
 import { DEFAULT_SETTINGS, Settings } from "./settings";
 import { CALENDAR_VIEW_TYPE, CalendarView } from "./ui/calendar-view";
 import { SettingsTab } from "./ui/settings-tab";
@@ -51,6 +52,20 @@ export default class DailyNoteNavigator extends Plugin {
 	}
 
 	onunload() {}
+
+	/**
+	 * Resolves the vault path of a periodic note for `anchor`, using the same
+	 * date-to-path mapping the plugin's own commands use. This is the supported
+	 * entry point for external scripts (e.g. a QuickAdd user script) that need a
+	 * path matching what the plugin would open or create, including the
+	 * ISO-week boundary rules a date-format string cannot reproduce.
+	 *
+	 * Reach it via
+	 * `app.plugins.plugins["daily-note-navigator"].resolvePath(...)`.
+	 */
+	resolvePath(period: Period = "daily", anchor: Date = todayAtNoon()): string {
+		return resolve(anchor, period).path;
+	}
 
 	private async revealCalendar(): Promise<void> {
 		const existing = this.app.workspace.getLeavesOfType(CALENDAR_VIEW_TYPE);
