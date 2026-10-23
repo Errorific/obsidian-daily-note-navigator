@@ -8,10 +8,8 @@ between existing periodic notes -- daily, weekly, quarterly, yearly -- is
 more manual than it needs to be. This plugin makes moving through that
 calendar of notes fast.
 
-## Vibe warning
-
-This whole thing is vibe coded AI slop to suit exactly my needs and no
-one elses. Expect low quality and bugs.
+> [!CAUTION]
+> This project is completely AI slop and only developed with my usage in mind. It's tested and I daily drive it, but I've never read the code and don't intend to.
 
 ## What it does
 
